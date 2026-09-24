@@ -149,6 +149,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // MODAL CONTROLS & AUTHENTICATION FLOW
 // =======================================================
 function openModal(id = 'loginModal') {
+    // Si intenta agendar cita sin estar registrado o haber iniciado sesión
+    if (id === 'appointmentModal' && !state.currentUser) {
+        showToast('⚠️ Regístrate primero', 'Debes crear una cuenta o iniciar sesión para agendar una cita.');
+        switchModalTab('register');
+        openModal('loginModal');
+        return;
+    }
+
     const modal = document.getElementById(id) || document.getElementById('loginModal');
     if (modal) {
         modal.classList.add('open');
@@ -1334,6 +1342,12 @@ function selectPetType(btn, speciesValue) {
 }
 
 function openAppointmentModal(serviceVal) {
+    if (!state.currentUser) {
+        showToast('⚠️ Regístrate primero', 'Debes crear una cuenta o iniciar sesión para agendar una cita.');
+        switchModalTab('register');
+        openModal('loginModal');
+        return;
+    }
     openModal('appointmentModal');
     if (serviceVal) {
         const select = document.getElementById('appointmentType');
@@ -1342,6 +1356,13 @@ function openAppointmentModal(serviceVal) {
 }
 
 function selectVaccineAndBook(vaccineName) {
+    if (!state.currentUser) {
+        closeModal('vaccineCatalogModal');
+        showToast('⚠️ Regístrate primero', 'Debes crear una cuenta o iniciar sesión para solicitar una vacuna.');
+        switchModalTab('register');
+        openModal('loginModal');
+        return;
+    }
     closeModal('vaccineCatalogModal');
     openAppointmentModal('vaccine');
     const notes = document.getElementById('appointmentNotes');
