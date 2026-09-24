@@ -149,6 +149,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // MODAL CONTROLS & AUTHENTICATION FLOW
 // =======================================================
 function openModal(id = 'loginModal') {
+    if (!state.currentUser) {
+        checkPersistedSession();
+    }
+
     // Si intenta agendar cita sin estar registrado o haber iniciado sesión
     if (id === 'appointmentModal' && !state.currentUser) {
         showToast('⚠️ Regístrate primero', 'Debes crear una cuenta o iniciar sesión para agendar una cita.');
@@ -672,15 +676,23 @@ function handleLogout() {
 
 function checkPersistedSession() {
     const savedUser = localStorage.getItem('canopolis_user') || localStorage.getItem('nexus_user');
-    const savedToken = localStorage.getItem('canopolis_token') || localStorage.getItem('nexus_token');
+    let savedToken = localStorage.getItem('canopolis_token') || localStorage.getItem('nexus_token');
     
-    if (savedUser && savedToken) {
+    if (savedUser) {
         try {
             state.currentUser = JSON.parse(savedUser);
+            if (!savedToken) {
+                savedToken = 'sess_active_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem('canopolis_token', savedToken);
+            }
             state.token = savedToken;
             updateAuthUI();
         } catch (e) {
-            localStorage.clear();
+            console.error('Error al restaurar sesión:', e);
+            localStorage.removeItem('canopolis_user');
+            localStorage.removeItem('canopolis_token');
+            state.currentUser = null;
+            state.token = null;
         }
     }
 }
@@ -834,6 +846,10 @@ async function submitForm(event) {
     if (event) event.preventDefault();
     
     // 1. Validar que el usuario esté logueado
+    if (!state.currentUser) {
+        checkPersistedSession();
+    }
+    
     if (!state.currentUser) {
         showToast('⚠️ Regístrate primero', 'Debes crear una cuenta o iniciar sesión para agendar una cita.');
         switchModalTab('register');
@@ -1185,6 +1201,10 @@ async function cargarServiciosEnSelect() {
  */
 async function abrirModalMisCitas() {
     if (!state.currentUser) {
+        checkPersistedSession();
+    }
+
+    if (!state.currentUser) {
         showToast('Inicia sesión', 'Debes iniciar sesión para consultar tus citas.');
         switchModalTab('register');
         openModal('loginModal');
@@ -1210,7 +1230,10 @@ async function abrirModalMisCitas() {
 
     const localCitas = JSON.parse(localStorage.getItem('canopolis_citas') || '[]');
     const userLocalCitas = localCitas.filter(c => 
-        c.mascota && c.mascota.propietario && Number(c.mascota.propietario.id) === Number(state.currentUser.id)
+        c.mascota && c.mascota.propietario && (
+            Number(c.mascota.propietario.id) === Number(state.currentUser.id) ||
+            (state.currentUser.email && c.mascota.propietario.email && String(c.mascota.propietario.email).toLowerCase() === String(state.currentUser.email).toLowerCase())
+        )
     );
 
     const backendIds = new Set(citas.map(c => Number(c.id)));
