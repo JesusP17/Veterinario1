@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Veterinario - Canopolis Clínica Veterinaria</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos del Panel Veterinario */
+        .panel-header {
+            background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-dark) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .panel-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+        
+        .panel-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--clr-primary);
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: var(--clr-gray);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        
+        .citas-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .citas-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .citas-card h2 {
+            margin: 0 0 20px 0;
+            color: var(--clr-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cita-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .cita-item {
+            border: 1px solid var(--clr-border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: #f9fafb;
+        }
+        
+        .cita-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .cita-mascota {
+            font-weight: 700;
+            color: var(--clr-secondary);
+        }
+        
+        .cita-estado {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .estado-confirmada {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .estado-pendiente {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        
+        .estado-atendida {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .estado-cancelada {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .cita-detalles {
+            font-size: 0.9rem;
+            color: var(--clr-gray);
+            line-height: 1.6;
+        }
+        
+        .cita-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-primary-sm {
+            background: var(--clr-primary);
+            color: white;
+        }
+        
+        .btn-primary-sm:hover {
+            background: var(--clr-primary-dark);
+        }
+        
+        .btn-outline-sm {
+            background: white;
+            color: var(--clr-primary);
+            border: 1px solid var(--clr-primary);
+        }
+        
+        .btn-outline-sm:hover {
+            background: var(--clr-primary-light);
+        }
+        
+        /* Modal de Consulta */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex !important;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 720px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--clr-gray);
+        }
+        
+        .modal-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--clr-primary);
+            margin-bottom: 20px;
+        }
+        
+        .form-consulta {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+        
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--clr-gray);
+            margin-bottom: 6px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid var(--clr-border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input[readonly] {
+            background: #f9fafb;
+            cursor: not-allowed;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            background: var(--clr-primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: var(--clr-primary-dark);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--clr-primary);
+            padding: 12px 24px;
+            border: 1px solid var(--clr-primary);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-outline:hover {
+            background: var(--clr-primary-light);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .guest-actions,
+            .user-badge {
+                display: none !important;
+            }
+            
+            .hamburger {
+                display: flex !important;
+            }
+            
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 76px;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border-bottom: 1px solid var(--clr-border);
+                padding: 20px 24px;
+                gap: 8px;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+                flex-direction: column;
+                z-index: 99;
+            }
+            
+            .nav-menu.open {
+                display: flex !important;
+            }
+            
+            .nav-menu li {
+                width: 100%;
+            }
+            
+            .nav-link {
+                display: block;
+                width: 100%;
+                padding: 12px 16px;
+                text-align: left;
+            }
+            
+            .mobile-auth-actions {
+                display: block;
+                margin-top: 12px;
+                padding-top: 12px;
+                border-top: 1px solid var(--clr-border);
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .modal {
+                padding: 20px;
+                width: 95%;
+            }
+        }
+
+        /* =========================================
+   HEADER DEL PANEL VETERINARIO - CENTRADO
+   ========================================= */
+.panel-header {
+    background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-dark) 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.panel-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+
+.panel-header p {
+    margin: 0;
+    opacity: 0.95;
+    font-size: 1rem;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* =========================================
+   FOOTER ORGANIZADO EN COLUMNAS
+   ========================================= */
+.footer {
+    background: #0f172a; /* Color oscuro profesional */
+    color: white;
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+}
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.footer-col h4 {
+    color: var(--clr-primary);
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--clr-primary);
+}
+
+.footer-logo strong {
+    display: block;
+    font-size: 1.3rem;
+    color: white;
+    font-weight: 800;
+}
+
+.footer-logo small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+}
+
+.footer-col p {
+    margin: 0;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.footer-col ul li {
+    margin: 0;
+}
+
+.footer-col a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-size: 0.95rem;
+}
+
+.footer-col a:hover {
+    color: var(--clr-primary);
+    transform: translateX(5px);
+}
+
+/* Iconos de contacto */
+.footer-col ul li::before {
+    content: '';
+    display: none;
+}
+
+/* Contacto con iconos */
+.footer-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.footer-contact-item strong {
+    color: var(--clr-primary);
+    min-width: 20px;
+}
+
+/* Footer bottom */
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+/* Redes sociales */
+.footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.footer-social a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.footer-social a:hover {
+    background: var(--clr-primary);
+    transform: translateY(-3px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .panel-header {
+        padding: 2rem 1rem;
+    }
+    
+    .panel-header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .panel-header p {
+        font-size: 0.9rem;
+    }
+    
+    .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .footer-logo {
+        justify-content: center;
+    }
+    
+    .footer-contact-item {
+        justify-content: center;
+    }
+    
+    .footer-social {
+        justify-content: center;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+        /* =========================================
+   CENTRADO PERFECTO DE LA BARRA DE NAVEGACIÓN
+   ========================================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: relative; /* Clave para que el menú se centre respecto a la barra */
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+
+.nav-menu {
+    position: absolute; /* Saca el menú del flujo normal */
+    left: 50%;          /* Lo mueve al 50% del ancho */
+    transform: translateX(-50%); /* Lo centra exactamente */
+    display: flex;
+    list-style: none;
+    gap: 2rem; /* Espacio entre cada enlace */
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #334155; /* Color gris oscuro para el texto */
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+    padding: 8px 4px;
+}
+
+.nav-link:hover, 
+.nav-link.active {
+    color: #0f766e; /* Color verde azulado (Canopolis) al pasar el mouse o estar activo */
+    border-bottom: 2px solid #0f766e;
+}
+
+/* Evitar que el menú se superponga feo sobre el logo o los botones en pantallas medianas */
+.logo, .guest-actions, .user-badge {
+    z-index: 2;
+    background: white; 
+    padding: 0 10px;
+}
+
+/* =========================================
+   AJUSTE PARA MÓVIL (Menú Hamburguesa)
+   ========================================= */
+@media (max-width: 768px) {
+    .nav-menu {
+        position: static; /* En móvil vuelve a su lugar normal */
+        transform: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        padding: 20px 0;
+        display: none; /* Oculto por defecto en móvil */
+    }
+    
+    .nav-menu.open {
+        display: flex; /* Se muestra cuando se activa el menú hamburguesa */
+    }
+    
+    .nav-link {
+        border-bottom: none;
+        padding: 12px 0;
+        text-align: center;
+        width: 100%;
+    }
+}
+
+           /* =========================================
+   BOTÓN DE ACCESO A INVENTARIO (PANEL VET)
+   ========================================= */
+.inventory-quick-access {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 20px;
+}
+
+.inventory-card-btn {
+    background: linear-gradient(135deg, var(--clr-secondary) 0%, var(--clr-primary-dark) 100%);
+    border-radius: 12px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    box-shadow: 0 4px 16px rgba(13, 118, 110, 0.25);
+    flex-wrap: wrap;
+    gap: 16px;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inventory-card-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(13, 118, 110, 0.35);
+    color: white;
+}
+
+.inventory-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.inventory-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.15);
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.inventory-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.inventory-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.btn-inventory-action {
+    background: white;
+    color: var(--clr-primary-dark);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.inventory-card-btn:hover .btn-inventory-action {
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+}
+
+@media (max-width: 768px) {
+    .inventory-card-btn {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+    }
+    .inventory-info {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .btn-inventory-action {
+        width: 100%;
+        justify-content: center;
+    }
+}
+        
+    </style>
+</head>
+<body>
+    <!-- Navbar Completo con IDs para roles -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="images/logo-canopolis.png" alt="Canopolis" class="logo-image">
+            <div class="logo-text">
+                <strong>Canopolis</strong>
+                <small>Hospital Veterinario</small>
+            </div>
+        </a>
+        
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html" class="nav-link">Inicio</a></li>
+            <li><a href="nosotros.html" class="nav-link">Nosotros</a></li>
+            <li><a href="servicios.html" class="nav-link">Servicios</a></li>
+            <li><a href="contacto.html" class="nav-link">Contacto</a></li>
+            
+            <!-- Panel Médico (SOLO VETERINARIO/ADMIN) -->
+            <li id="panelVetNav" style="display: none;">
+                <a href="veterinario.html" class="nav-link active">Panel Médico</a>
+            </li>
+            
+            <!-- Mis Citas (SOLO CLIENTE) -->
+            <li id="btnMisCitas" style="display: none;">
+                <a href="javascript:void(0)" class="nav-link" onclick="abrirModalMisCitas()">Mis Citas</a>
+            </li>
+            
+            <!-- Historial Clínico (SOLO CLIENTE) -->
+            <li id="btnHistorialClinico" style="display: none;">
+                <a href="historia-clinica.html" class="nav-link">Historial</a>
+            </li>
+            
+            <!-- Separador móvil -->
+            <li class="mobile-auth-actions" id="mobileAuthSeparator" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--clr-border);"></li>
+            
+            <!-- Login móvil -->
+            <li class="mobile-auth-actions" id="mobileGuestActions">
+                <button class="btn-login mobile-btn" onclick="openModal('loginModal')" style="width: 100%;">
+                    Iniciar Sesión
+                </button>
+            </li>
+            
+            <!-- Badge usuario móvil -->
+            <li class="mobile-auth-actions" id="mobileUserBadge" style="display: none;">
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="user-avatar" id="mobileUserAvatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--clr-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">U</div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span id="mobileUserName" style="font-weight: 700; font-size: 0.85rem; color: var(--clr-secondary);">Usuario</span>
+                            <span id="mobileUserRole" style="font-size: 0.7rem; color: var(--clr-gray); font-weight: 600;">CLIENTE</span>
+                        </div>
+                    </div>
+                    <button class="btn-logout" onclick="handleLogout()" style="font-size: 0.75rem; padding: 4px 10px;">Salir</button>
+                </div>
+            </li>
+        </ul>
+        
+        <!-- Login desktop -->
+        <div class="guest-actions" id="guestNavActions">
+            <button class="btn-login" onclick="openModal('loginModal')">Iniciar Sesión</button>
+        </div>
+        
+        <!-- Badge usuario desktop -->
+        <div class="user-badge" id="userProfileBadge" style="display: none;">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info">
+                <span id="userName">Usuario</span>
+                <span id="userRole">CLIENTE</span>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()">Salir</button>
+        </div>
+    </nav>
+
+    <!-- Header del Panel -->
+    <div class="panel-header">
+        <h1> Panel Veterinario</h1>
+        <p>Gestión de citas, consultas médicas y atención de pacientes</p>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="statCitasHoy">0</div>
+            <div class="stat-label">Citas Hoy</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="statPendientes">0</div>
+            <div class="stat-label">Pendientes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="statAtendidas">0</div>
+            <div class="stat-label">Atendidas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="statTotalMascotas">0</div>
+            <div class="stat-label">Mascotas Registradas</div>
+        </div>
+    </div>
+
+   
+    
+    <!-- Citas Asignadas -->
+    <div class="citas-section">
+        <div class="citas-card">
+            <h2> Citas Asignadas</h2>
+            <div id="citasVeterinarioContenido">
+                <p style="text-align: center; color: var(--clr-gray); padding: 20px;">Cargando citas asignadas...</p>
+            </div>
+        </div>
+
+        <!-- Citas Pendientes -->
+        <div class="citas-card">
+            <h2>⏳ Citas Pendientes de Asignación</h2>
+            <div id="citasPendientesContenido">
+                <p style="text-align: center; color: var(--clr-gray); padding: 20px;">Cargando citas pendientes...</p>
+            </div>
+        </div>
+
+        <!-- Historias Clínicas Recientes -->
+        <div class="citas-card">
+            <h2>📋 Historias Clínicas Recientes</h2>
+            <div id="historiasClinicasContenido">
+                <p style="text-align: center; color: var(--clr-gray); padding: 20px;">Cargando historias clínicas...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Consulta Médica (CON INPUTS E IDs CORRECTOS) -->
+    <div id="modalNuevaConsulta" class="modal-overlay" onclick="closeModalOutside(event, 'modalNuevaConsulta')">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('modalNuevaConsulta')">&times;</button>
+            <div class="modal-logo"> Registro de Consulta Médica</div>
+            
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 0.9rem; color: #92400e;">
+                    <strong>⚠️ Importante:</strong> Esta consulta se guardará en el historial clínico. Completa los datos para marcar la cita como atendida.
+                </p>
+            </div>
+            
+            <form id="formNuevaConsulta" class="form-consulta" onsubmit="registrarNuevaConsulta(event)">
+                <!-- Información de la Cita (Solo lectura - INPUTS CON IDs) -->
+                <div style="background: #f0f9ff; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 12px 0; color: var(--clr-primary);">Información de la Cita</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label>Mascota</label>
+                            <input type="text" id="consultaMascotaNombre" readonly style="background: #f9fafb; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Servicio</label>
+                            <input type="text" id="consultaServicio" readonly style="background: #f9fafb; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha y Hora</label>
+                            <input type="text" id="consultaFechaHora" readonly style="background: #f9fafb; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Motivo</label>
+                            <input type="text" id="consultaMotivoCita" readonly style="background: #f9fafb; cursor: not-allowed;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Ocultos (CRÍTICO para el backend) -->
+                <input type="hidden" id="consultaMascotaId">
+                <input type="hidden" id="consultaCitaId">
+
+                <!-- Signos Vitales -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label for="consultaPeso">Peso (kg) *</label>
+                        <input type="number" id="consultaPeso" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="consultaTemperatura">Temperatura (°C) *</label>
+                        <input type="number" id="consultaTemperatura" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="form-group full">
+                    <label for="consultaSintomas">Síntomas Observados *</label>
+                    <textarea id="consultaSintomas" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group full">
+                    <label for="consultaDiagnostico">Diagnóstico *</label>
+                    <textarea id="consultaDiagnostico" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group full">
+                    <label for="consultaTratamiento">Tratamiento *</label>
+                    <textarea id="consultaTratamiento" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group full">
+                    <label for="consultaMedicamentos">Medicamentos recetados</label>
+                    <textarea id="consultaMedicamentos" rows="2" placeholder="Nombre, dosis y frecuencia"></textarea>
+                </div>
+                
+                <div class="form-group full">
+                    <label for="consultaRecomendaciones">Recomendaciones</label>
+                    <textarea id="consultaRecomendaciones" rows="2"></textarea>
+                </div>
+                
+                <div class="form-group full">
+                    <label for="consultaObservaciones">Observaciones adicionales</label>
+                    <textarea id="consultaObservaciones" rows="2"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">💾 Guardar y Marcar Atendida</button>
+                    <button type="button" class="btn-outline" onclick="closeModal('modalNuevaConsulta')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+ <!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <!-- Columna 1: Logo y descripción -->
+        <div class="footer-col">
+                <div>
+                    <strong>Canopolis</strong>
+                    <small>Hospital Veterinario</small>
+                </div>
+            </div>
+            <p>La clínica y hospital veterinario donde tu mascota es tratada con el amor incondicional, la ética y el rigor científico que merece.</p>
+            <div class="footer-social">
+                <a href="#" title="Facebook">📘</a>
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="WhatsApp">💬</a>
+                <a href="#" title="YouTube">▶️</a>
+            </div>
+        </div>
+        
+        <!-- Columna 2: Panel Médico -->
+        <div class="footer-col">
+            <h4>Panel Médico</h4>
+            <ul>
+                <li><a href="veterinario.html">Citas asignadas</a></li>
+                <li><a href="historia-clinica.html">Historias clínicas</a></li>
+            </ul>
+        </div>
+        
+        <!-- Columna 3: Contacto -->
+        <div class="footer-col">
+            <h4>Contacto</h4>
+            <ul>
+                <li class="footer-contact-item">
+                    <strong>📞</strong>
+                    <span>+57 (601) 800-CANOPOLIS</span>
+                </li>
+                <li class="footer-contact-item">
+                    <strong>✉️</strong>
+                    <span>citas@canopolis.com</span>
+                </li>
+                <li class="footer-contact-item">
+                    <strong>📍</strong>
+                    <span>Av. Principal de las Mascotas #102</span>
+                </li>
+                <li class="footer-contact-item">
+                    <strong></strong>
+                    <span>Lun–Sáb: 7am – 8pm<br>Urgencias 24/7</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>© 2026 Canopolis · Clínica & Hospital Veterinario. Todos los derechos reservados.</p>
+        <p>Desarrollado con arquitectura Spring Boot 3 y MySQL.</p>
+    </div>
+</footer>
+    
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        // =======================================================
+        // VERIFICACIÓN DE ACCESO
+        // =======================================================
+        (function() {
+            const savedUser = localStorage.getItem('canopolis_user');
+            if (savedUser) {
+                try {
+                    const user = JSON.parse(savedUser);
+                    if (!user || (user.rol !== 'VETERINARIO' && user.rol !== 'ADMIN' && user.rol !== 'ADMINISTRADOR')) {
+                        alert('⚠️ Acceso Restringido\n\nEl Panel Médico es exclusivo para personal veterinario.\n\nSerás redirigido al inicio.');
+                        window.location.href = 'index.html';
+                    }
+                } catch (e) {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                alert('️ Sesión no iniciada\n\nDebes iniciar sesión con una cuenta de veterinario para acceder al Panel Médico.\n\nSerás redirigido al inicio.');
+                window.location.href = 'index.html';
+            }
+        })();
+
+        // =======================================================
+        // FUNCIONES AUXILIARES
+        // =======================================================
+        
+        function obtenerVetId() {
+            return Number(state.currentUser?.id || localStorage.getItem('vetId') || 2);
+        }
+
+        // =======================================================
+        // INICIALIZACIÓN
+        // =======================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarCitasVeterinario();
+            cargarCitasPendientes();
+            cargarEstadisticas();
+        });
+
+        // =======================================================
+        // CARGA DE CITAS ASIGNADAS
+        // =======================================================
+        async function cargarCitasVeterinario() {
+            const vetId = obtenerVetId();
+            const contenedor = document.getElementById('citasVeterinarioContenido');
+            
+            try {
+                const res = await fetch(`/api/citas/veterinario/${vetId}`);
+                if (!res.ok) throw new Error('Error al cargar citas');
+                
+                const todasLasCitas = await res.json();
+                const citasAsignadas = todasLasCitas.filter(c => c.veterinario && Number(c.veterinario.id) === Number(vetId));
+                
+                if (citasAsignadas.length === 0) {
+                    contenedor.innerHTML = '<p style="text-align: center; color: var(--clr-gray); padding: 20px;">No tienes citas asignadas a tu agenda aún.</p>';
+                    return;
+                }
+                
+                let html = '<ul class="cita-list">';
+                citasAsignadas.forEach(cita => {
+                    const estadoClass = `estado-${cita.estado.toLowerCase()}`;
+                    html += `
+                        <li class="cita-item">
+                            <div class="cita-item-header">
+                                <span class="cita-mascota"> ${cita.mascota.nombre} (${cita.mascota.especie})</span>
+                                <span class="cita-estado ${estadoClass}">${cita.estado}</span>
+                            </div>
+                            <div class="cita-detalles">
+                                <strong>Servicio:</strong> ${cita.servicio}<br>
+                                <strong>Fecha:</strong> ${cita.fecha} a las ${cita.hora}<br>
+                                <strong>Motivo:</strong> ${cita.motivo || 'No especificado'}
+                            </div>
+                            <div class="cita-actions">
+                                ${cita.estado === 'PENDIENTE' || cita.estado === 'CONFIRMADA' ? `
+                                    <button class="btn-sm btn-primary-sm" onclick="atenderCita(${cita.id})">✓ Atender</button>
+                                    <button class="btn-sm btn-outline-sm" onclick="verHistoriaClinica(${cita.mascota.id})">📋 Historia</button>
+                                ` : ''}
+                                ${cita.estado === 'CANCELADA' ? '<em style="color: #991b1b;">Cita cancelada</em>' : ''}
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                contenedor.innerHTML = html;
+            } catch (err) {
+                console.error('Error cargando citas asignadas:', err);
+                contenedor.innerHTML = '<p style="text-align: center; color: #991b1b; padding: 20px;">Error al cargar citas asignadas.</p>';
+            }
+        }
+
+        // =======================================================
+        // CARGA DE CITAS PENDIENTES
+        // =======================================================
+        async function cargarCitasPendientes() {
+            const contenedor = document.getElementById('citasPendientesContenido');
+            
+            try {
+                const res = await fetch('/api/citas/estado/PENDIENTE');
+                if (!res.ok) throw new Error('Error al cargar citas pendientes');
+                
+                const todasPendientes = await res.json();
+                const citasSinAsignar = todasPendientes.filter(c => !c.veterinario);
+                
+                if (citasSinAsignar.length === 0) {
+                    contenedor.innerHTML = '<p style="text-align: center; color: var(--clr-gray); padding: 20px;">No hay citas pendientes de asignación.</p>';
+                    return;
+                }
+                
+                let html = '<ul class="cita-list">';
+                citasSinAsignar.forEach(cita => {
+                    html += `
+                        <li class="cita-item">
+                            <div class="cita-item-header">
+                                <span class="cita-mascota">🐾 ${cita.mascota.nombre} (${cita.mascota.especie})</span>
+                                <span class="cita-estado estado-pendiente">PENDIENTE</span>
+                            </div>
+                            <div class="cita-detalles">
+                                <strong>Servicio:</strong> ${cita.servicio}<br>
+                                <strong>Fecha:</strong> ${cita.fecha} a las ${cita.hora}<br>
+                                <strong>Motivo:</strong> ${cita.motivo || 'No especificado'}
+                            </div>
+                            <div class="cita-actions">
+                                <button class="btn-sm btn-primary-sm" onclick="asignarCita(${cita.id})">Asignar a mi agenda</button>
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                contenedor.innerHTML = html;
+            } catch (err) {
+                console.error('Error cargando citas pendientes:', err);
+                contenedor.innerHTML = '<p style="text-align: center; color: #991b1b; padding: 20px;">Error al cargar citas pendientes.</p>';
+            }
+        }
+
+        // =======================================================
+        // ESTADÍSTICAS
+        // =======================================================
+        async function cargarEstadisticas() {
+            try {
+                const vetId = obtenerVetId();
+                
+                const hoy = new Date().toISOString().split('T')[0];
+                const resHoy = await fetch(`/api/citas/veterinario/${vetId}`);
+                const citasHoy = await resHoy.json();
+                const citasHoyCount = citasHoy.filter(c => c.veterinario && Number(c.veterinario.id) === Number(vetId) && c.fecha === hoy).length;
+                document.getElementById('statCitasHoy').textContent = citasHoyCount;
+                
+                const resPend = await fetch('/api/citas/estado/PENDIENTE');
+                const pendientes = await resPend.json();
+                const pendientesSinAsignar = pendientes.filter(c => !c.veterinario).length;
+                document.getElementById('statPendientes').textContent = pendientesSinAsignar;
+                
+                const resAtend = await fetch('/api/citas/estado/ATENDIDA');
+                const atendidas = await resAtend.json();
+                const atendidasVet = atendidas.filter(c => c.veterinario && Number(c.veterinario.id) === Number(vetId)).length;
+                document.getElementById('statAtendidas').textContent = atendidasVet;
+                
+                const resMasc = await fetch('/api/mascotas');
+                const mascotas = await resMasc.json();
+                document.getElementById('statTotalMascotas').textContent = mascotas.length;
+            } catch (err) {
+                console.error('Error al cargar estadísticas:', err);
+            }
+        }
+
+        // =======================================================
+        // ATENDER CITA (ABRE MODAL DE CONSULTA)
+        // =======================================================
+        async function atenderCita(citaId) {
+            console.log('Atender cita ID:', citaId);
+            
+            try {
+                const vetId = obtenerVetId();
+                const res = await fetch(`/api/citas/veterinario/${vetId}`);
+                if (!res.ok) throw new Error('No se pudieron cargar las citas');
+                
+                const todasLasCitas = await res.json();
+                const cita = todasLasCitas.find(c => Number(c.id) === Number(citaId));
+                
+                if (!cita) {
+                    showToast('Error', 'No se encontró la información de la cita.', 'error');
+                    return;
+                }
+                
+                console.log('Cita encontrada:', cita);
+                
+                // Prellenar el formulario con los datos de la cita
+                document.getElementById('consultaMascotaId').value = cita.mascota.id;
+                document.getElementById('consultaCitaId').value = cita.id;
+                document.getElementById('consultaMascotaNombre').value = `${cita.mascota.nombre} (${cita.mascota.especie})`;
+                document.getElementById('consultaServicio').value = cita.servicio;
+                document.getElementById('consultaFechaHora').value = `${cita.fecha} a las ${cita.hora}`;
+                document.getElementById('consultaMotivoCita').value = cita.motivo || 'No especificado';
+                
+                // Limpiar campos de consulta
+                document.getElementById('consultaPeso').value = '';
+                document.getElementById('consultaTemperatura').value = '';
+                document.getElementById('consultaSintomas').value = '';
+                document.getElementById('consultaDiagnostico').value = '';
+                document.getElementById('consultaTratamiento').value = '';
+                document.getElementById('consultaMedicamentos').value = '';
+                document.getElementById('consultaRecomendaciones').value = '';
+                document.getElementById('consultaObservaciones').value = '';
+                
+                // Abrir el modal (usando la clase .open de app.js)
+                const modal = document.getElementById('modalNuevaConsulta');
+                if (modal) {
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                    console.log('Modal abierto:', modal);
+                }
+                
+            } catch (err) {
+                console.error('Error en atenderCita:', err);
+                showToast('Error', 'No se pudo cargar la información de la cita.', 'error');
+            }
+        }
+
+        // =======================================================
+        // ASIGNAR CITA
+        // =======================================================
+        async function asignarCita(citaId) {
+            const vetId = obtenerVetId();
+            
+            try {
+                const res = await fetch(`/api/citas/${citaId}/asignar-veterinario/${vetId}`, { method: 'PUT' });
+                if (res.ok) {
+                    showToast('Cita Asignada', 'La cita ha sido asignada a tu agenda.');
+                    cargarCitasVeterinario();
+                    cargarCitasPendientes();
+                    cargarEstadisticas();
+                } else {
+                    showToast('Error', 'No se pudo asignar la cita.', 'error');
+                }
+            } catch (err) {
+                showToast('Error', 'Error de conexión con el backend.', 'error');
+            }
+        }
+
+        // =======================================================
+        // REGISTRAR CONSULTA Y MARCAR COMO ATENDIDA
+        // =======================================================
+        async function registrarNuevaConsulta(event) {
+            event.preventDefault();
+            
+            // Validar campos obligatorios
+            const peso = document.getElementById('consultaPeso').value;
+            const temperatura = document.getElementById('consultaTemperatura').value;
+            const sintomas = document.getElementById('consultaSintomas').value.trim();
+            const diagnostico = document.getElementById('consultaDiagnostico').value.trim();
+            const tratamiento = document.getElementById('consultaTratamiento').value.trim();
+            
+            if (!peso || !temperatura || !sintomas || !diagnostico || !tratamiento) {
+                showToast('Campos obligatorios', 'Por favor completa todos los campos marcados con *', 'error');
+                return;
+            }
+            
+            const payload = {
+                mascotaId: document.getElementById('consultaMascotaId').value,
+                citaId: document.getElementById('consultaCitaId').value,
+                motivo: document.getElementById('consultaMotivoCita').value,
+                sintomas: sintomas,
+                peso: parseFloat(peso),
+                temperatura: parseFloat(temperatura),
+                diagnostico: diagnostico,
+                tratamiento: tratamiento,
+                medicamentos: document.getElementById('consultaMedicamentos').value.trim(),
+                recomendaciones: document.getElementById('consultaRecomendaciones').value.trim(),
+                observaciones: document.getElementById('consultaObservaciones').value.trim(),
+                veterinarioId: obtenerVetId()
+            };
+            
+            console.log('Payload consulta:', payload);
+            
+            try {
+                // PASO 1: Registrar consulta en historial clínico
+                const resConsulta = await fetch('/api/historias-clinicas/consultas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!resConsulta.ok) {
+                    const data = await resConsulta.json();
+                    showToast('Error', data.mensaje || 'No se pudo registrar la consulta.', 'error');
+                    return;
+                }
+                
+                showToast('✅ Consulta Registrada', 'La consulta médica ha sido guardada en el historial clínico.');
+                
+                // PASO 2: Marcar cita como ATENDIDA
+                const citaId = document.getElementById('consultaCitaId').value;
+                const resAtender = await fetch(`/api/citas/${citaId}/atender`, { method: 'PUT' });
+                
+                if (resAtender.ok) {
+                    showToast('✅ Cita Atendida', 'La cita ha sido marcada como completada.');
+                } else {
+                    showToast('⚠️ Advertencia', 'La consulta se registró pero no se pudo actualizar la cita.', 'error');
+                }
+                
+                // Cerrar modal y recargar
+                closeModal('modalNuevaConsulta');
+                document.getElementById('formNuevaConsulta').reset();
+                
+                cargarCitasVeterinario();
+                cargarCitasPendientes();
+                cargarEstadisticas();
+                
+            } catch (err) {
+                console.error('Error en registrarNuevaConsulta:', err);
+                showToast('Error', 'Error de conexión con el backend.', 'error');
+            }
+        }
+
+        // =======================================================
+        // VER HISTORIA CLÍNICA
+        // =======================================================
+        function verHistoriaClinica(mascotaId) {
+            window.location.href = `historia-clinica.html?mascotaId=${mascotaId}`;
+        }
+
+        // Exponer funciones globales
+        window.atenderCita = atenderCita;
+        window.asignarCita = asignarCita;
+        window.registrarNuevaConsulta = registrarNuevaConsulta;
+        window.verHistoriaClinica = verHistoriaClinica;
+        window.obtenerVetId = obtenerVetId;
+    </script>
+</body>
+</html>

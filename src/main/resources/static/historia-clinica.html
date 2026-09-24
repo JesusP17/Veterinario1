@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia Clínica y Expediente Médico Digital - Canopolis Hospital Veterinario</title>
+    <meta name="description" content="Historia Clínica y Expediente Médico Digital - Canopolis Hospital Veterinario">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos del Expediente Médico */
+        .expediente-section {
+            padding: 60px 24px;
+            background: #f8fafc;
+        }
+        .expediente-header {
+            background: linear-gradient(135deg, var(--clr-secondary) 0%, #1e3a5f 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .expediente-header-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .expediente-header-info p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        .expediente-numero {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .mascota-info-card {
+            background: #fff;
+            border: 1px solid var(--clr-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .mascota-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .mascota-info-label {
+            font-size: 0.78rem;
+            color: var(--clr-gray);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .mascota-info-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--clr-secondary);
+        }
+        .consulta-card {
+            background: #fff;
+            border: 1px solid var(--clr-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        .consulta-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .consulta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--clr-border);
+        }
+        .consulta-fecha {
+            font-weight: 700;
+            color: var(--clr-primary);
+            font-size: 1rem;
+        }
+        .consulta-veterinario {
+            background: var(--clr-primary-light);
+            color: var(--clr-primary-dark);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+        .consulta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .consulta-field {
+            display: flex;
+            flex-direction: column;
+        }
+        .consulta-field-label {
+            font-size: 0.78rem;
+            color: var(--clr-gray);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .consulta-field-value {
+            font-size: 0.95rem;
+            color: var(--clr-secondary);
+            line-height: 1.5;
+        }
+        .consulta-field-value strong {
+            color: var(--clr-primary);
+        }
+        .btn-print-action {
+            background: var(--clr-secondary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-print-action:hover {
+            background: var(--clr-primary-dark);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--clr-gray);
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+        .selector-mascota {
+            background: #fff;
+            border: 1px solid var(--clr-border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .selector-mascota select {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 16px;
+            border: 1.5px solid var(--clr-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-top: 16px;
+        }
+        @media print {
+            .header, .btn-print-action, .modal-overlay, .selector-mascota {
+                display: none !important;
+            }
+            .expediente-section {
+                padding: 0;
+            }
+            .consulta-card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Banner de estado del backend -->
+    <div id="backendBanner" style="display:none; background:#fef3c7; border-bottom:1px solid #f59e0b; padding:10px 24px; text-align:center; font-size:0.88rem; color:#92400e; font-weight:600;">
+        ️ Modo demostración: El servidor backend no está disponible. Algunas funciones pueden no funcionar correctamente.
+    </div>
+
+    <!-- Header/Navbar -->
+    <header id="navbar" class="header">
+      <nav class="navbar">
+    <a href="index.html" class="logo">
+        <img src="images/logo-canopolis.png" alt="Canopolis" class="logo-image">
+        <div class="logo-text">
+            <strong>Canopolis</strong>
+            <small>Hospital Veterinario</small>
+        </div>
+    </a>
+    
+    <!-- Botón Hamburguesa para Móviles -->
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <ul class="nav-menu" id="navMenu">
+        <!-- Enlaces comunes para todos -->
+        <li><a href="index.html" class="nav-link active">Inicio</a></li>
+        <li><a href="nosotros.html" class="nav-link">Nosotros</a></li>
+        <li><a href="servicios.html" class="nav-link">Servicios</a></li>
+        <li><a href="contacto.html" class="nav-link">Contacto</a></li>
+        
+        <!-- ENLACES CONDICIONALES SEGÚN ROL -->
+        
+        <!-- Panel Médico (SOLO VETERINARIO/ADMIN) -->
+        <li id="panelVetNav" style="display: none;">
+            <a href="veterinario.html" class="nav-link" onclick="accederPanelMedico(event)"> Panel Médico</a>
+        </li>
+        
+        <!-- Mis Citas (SOLO CLIENTE) -->
+        <li id="btnMisCitas" style="display: none;">
+            <a href="javascript:void(0)" class="nav-link" onclick="abrirModalMisCitas()"> Mis Citas</a>
+        </li>
+        
+        <!-- Historial Clínico (SOLO CLIENTE) -->
+        <li id="btnHistorialClinico" style="display: none;">
+            <a href="historia-clinica.html" class="nav-link">Historial</a>
+        </li>
+        
+        <!-- SEPARADOR para elementos de autenticación en móvil -->
+        <li class="mobile-auth-actions" id="mobileAuthSeparator" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--clr-border);"></li>
+        
+        <!-- Botón Login (cuando NO está logueado) - MÓVIL -->
+        <li class="mobile-auth-actions" id="mobileGuestActions">
+            <button class="btn-login mobile-btn" onclick="openModal('loginModal')">
+                👤 Iniciar Sesión
+            </button>
+        </li>
+        
+        <!-- Badge de usuario logueado - MÓVIL -->
+        <li class="mobile-auth-actions" id="mobileUserBadge" style="display: none;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="user-avatar" id="mobileUserAvatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--clr-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">U</div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span id="mobileUserName" style="font-weight: 700; font-size: 0.85rem; color: var(--clr-secondary);">Usuario</span>
+                        <span id="mobileUserRole" style="font-size: 0.7rem; color: var(--clr-gray); font-weight: 600;">CLIENTE</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" style="font-size: 0.75rem; padding: 4px 10px;">Salir</button>
+            </div>
+        </li>
+    </ul>
+    
+    <!-- Botón Login (cuando NO está logueado) - DESKTOP -->
+    <div class="guest-actions" id="guestNavActions">
+        <button class="btn-login" onclick="openModal('loginModal')">
+            👤 Iniciar Sesión
+        </button>
+    </div>
+    
+    <!-- Badge de usuario logueado - DESKTOP -->
+    <div class="user-badge" id="userProfileBadge" style="display: none;">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-info">
+            <span id="userName">Usuario</span>
+            <span id="userRole">CLIENTE</span>
+        </div>
+        <button class="btn-logout" onclick="handleLogout()">Salir</button>
+    </div>
+</nav>
+    </header>
+
+    <!-- Contenido Principal -->
+    <section class="expediente-section">
+        <div class="about-container">
+            <!-- Barra Superior de Navegación del Expediente -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
+                <div>
+                    <a href="javascript:history.back()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--clr-primary); text-decoration: none; margin-bottom: 8px;">
+                        ← Volver
+                    </a>
+                    <span class="section-tag">📋 EXPEDIENTE MÉDICO DIGITAL</span>
+                    <h1 style="font-family: var(--font-head); font-size: 2rem; color: var(--clr-secondary); margin-top: 6px;">
+                        Historia Clínica de la Mascota
+                    </h1>
+                </div>
+                <button class="btn-print-action" onclick="window.print()">
+                    🖨️ Imprimir Expediente
+                </button>
+            </div>
+
+            <!-- Selector de Mascota (si no viene por URL) -->
+            <div id="selectorMascota" class="selector-mascota" style="display: none;">
+                <div class="empty-state-icon"></div>
+                <h3>Selecciona una mascota para ver su historia clínica</h3>
+                <p>Elige la mascota cuyo expediente deseas consultar</p>
+                <select id="selectMascota" onchange="cargarHistoriaClinica(this.value)">
+                    <option value="">-- Seleccionar mascota --</option>
+                </select>
+            </div>
+
+            <!-- Contenido del Expediente -->
+            <div id="expedienteContenido" style="display: none;">
+                <!-- Header del Expediente -->
+                <div class="expediente-header">
+                    <div class="expediente-header-info">
+                        <h2 id="expMascotaNombre">Nombre de la Mascota</h2>
+                        <p id="expMascotaDetalles">Especie · Raza · Sexo</p>
+                        <p id="expPropietario" style="margin-top: 8px; font-size: 0.9rem;">Propietario: Nombre</p>
+                    </div>
+                    <div class="expediente-numero" id="expNumeroExpediente">
+                        N° Expediente: HC-0000-2026
+                    </div>
+                </div>
+
+                <!-- Información General de la Mascota -->
+                <div class="mascota-info-card">
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Especie</span>
+                        <span class="mascota-info-value" id="expEspecie">-</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Raza</span>
+                        <span class="mascota-info-value" id="expRaza">-</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Sexo</span>
+                        <span class="mascota-info-value" id="expSexo">-</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Fecha de Nacimiento</span>
+                        <span class="mascota-info-value" id="expFechaNacimiento">-</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Peso Actual</span>
+                        <span class="mascota-info-value" id="expPeso">- kg</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Vacunas al Día</span>
+                        <span class="mascota-info-value" id="expVacunas">-</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Alergias</span>
+                        <span class="mascota-info-value" id="expAlergias">-</span>
+                    </div>
+                    <div class="mascota-info-item">
+                        <span class="mascota-info-label">Antecedentes</span>
+                        <span class="mascota-info-value" id="expAntecedentes">-</span>
+                    </div>
+                </div>
+
+                <!-- Sección de Consultas Médicas -->
+                <div style="margin-top: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 1.4rem; color: var(--clr-secondary); font-weight: 800;">
+                            📝 Consultas Médicas Registradas
+                        </h3>
+                        <span id="expTotalConsultas" style="background: var(--clr-primary-light); color: var(--clr-primary-dark); padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 0.88rem;">
+                            0 consultas
+                        </span>
+                    </div>
+
+                    <div id="consultasContenido">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <h3>No hay consultas registradas</h3>
+                            <p>Aún no se han registrado atenciones médicas para esta mascota.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="footer-logo">🐾 Canopolis</div>
+                    <p>
+                        La clínica y hospital veterinario donde tu mascota es tratada con el amor 
+                        incondicional, la ética y el rigor científico que merece.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💬</a>
+                        <a href="#" class="social-link">▶️</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h5>Expediente Médico</h5>
+                    <ul>
+                        <li><a href="veterinario.html">Panel Médico</a></li>
+                        <li><a href="index.html">Inicio</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Contacto</h5>
+                    <ul>
+                        <li>📞 +57 (601) 800-CANOPOLIS</li>
+                        <li>️ citas@canopolis.com</li>
+                        <li>📍 Av. Principal de las Mascotas #102</li>
+                        <li>🕐 Lun–Sáb: 7am – 8pm · Urgencias 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Canopolis · Clínica & Hospital Veterinario. Todos los derechos reservados.</p>
+                <p>Desarrollado con arquitectura Spring Boot 3 y MySQL.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay" onclick="closeModalOutside(event, 'loginModal')">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <div class="modal-logo">🐾 Canopolis</div>
+            <h3>Iniciar Sesión</h3>
+            <p>Accede al portal médico, historial clínico y gestión MySQL</p>
+            <div class="modal-tabs">
+                <button id="modalTabLogin" class="modal-tab-btn active" onclick="switchModalTab('login')">Iniciar Sesión</button>
+                <button id="modalTabRegister" class="modal-tab-btn" onclick="switchModalTab('register')">Crear Cuenta</button>
+            </div>
+            <button class="demo-fill-btn" onclick="fillDemoCredentials()">⚡ Autocompletar con credenciales demo</button>
+            <div id="loginForm" class="tab-content active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Correo electrónico *</label>
+                        <input type="email" id="loginEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña *</label>
+                        <div class="pwd-input-wrap">
+                            <input type="password" id="loginPassword" name="password" required>
+                            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <div id="authFeedback" class="form-feedback" style="display: none;"></div>
+                    <button type="submit" id="loginSubmitBtn" class="btn-primary full-btn">
+                        Ingresar al Sistema
+                    </button>
+                </form>
+                <p class="modal-footer-text">
+                    ¿No tienes cuenta? <a href="javascript:void(0)" onclick="switchModalTab('register')">Regístrate gratis</a>
+                </p>
+            </div>
+            <div id="registerForm" class="tab-content" style="display: none;">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="regName">Nombre completo *</label>
+                        <input type="text" id="regName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Correo electrónico *</label>
+                        <input type="email" id="regEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Contraseña *</label>
+                        <div class="pwd-input-wrap">
+                            <input type="password" id="regPassword" name="password" required>
+                            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" id="registerSubmitBtn" class="btn-primary full-btn">
+                        Crear Cuenta y Entrar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        // Funciones específicas del Expediente Médico
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const mascotaId = params.get('mascotaId');
+            
+            if (mascotaId) {
+                cargarHistoriaClinica(mascotaId);
+            } else {
+                // Si no hay mascotaId en URL, mostrar selector
+                document.getElementById('selectorMascota').style.display = 'block';
+                cargarMascotasEnSelector();
+            }
+        });
+
+     async function cargarMascotasEnSelector() {
+        const select = document.getElementById('selectMascota');
+    
+          // Verificar que el usuario esté logueado
+        const savedUser = localStorage.getItem('canopolis_user') || localStorage.getItem('nexus_user');
+        if (!savedUser) {
+            showToast('Acceso Restringido', 'Debes iniciar sesión para ver tu historial clínico.', 'error');
+            setTimeout(() => {
+               window.location.href = 'index.html';
+            }, 2000);
+         return;
+       }
+    
+        const user = JSON.parse(savedUser);
+        const userId = user.id;
+    
+        try {
+        // Cargar solo las mascotas del usuario logueado
+        const res = await fetch(`/api/mascotas/propietario/${userId}`);
+        if (!res.ok) throw new Error('Error al cargar mascotas');
+        
+        const mascotas = await res.json();
+        select.innerHTML = '<option value="">-- Seleccionar mascota --</option>';
+        
+        if (mascotas.length === 0) {
+            select.innerHTML = '<option value="">No tienes mascotas registradas</option>';
+            showToast('Sin Mascotas', 'No tienes mascotas registradas en el sistema.', 'error');
+            return;
+         }
+        
+           mascotas.forEach(m => {
+            select.innerHTML += `<option value="${m.id}">${m.nombre} (${m.especie} - ${m.raza || 'Sin raza'})</option>`;
+           });
+          } catch (err) {
+            console.error('Error al cargar mascotas:', err);
+            select.innerHTML = '<option value="">Error al cargar mascotas</option>';
+            showToast('Error', 'No se pudieron cargar las mascotas.', 'error');
+          }
+        }   
+        async function cargarHistoriaClinica(mascotaId) {
+            if (!mascotaId) return;
+            
+            const expediente = document.getElementById('expedienteContenido');
+            const consultasContenido = document.getElementById('consultasContenido');
+            
+            try {
+                const res = await fetch(`/api/historias-clinicas/mascota/${mascotaId}`);
+                if (!res.ok) throw new Error('Error al cargar historia clínica');
+                
+                const data = await res.json();
+                
+                if (!data.exito) {
+                    showToast('Error', data.mensaje || 'No se pudo cargar la historia clínica.', 'error');
+                    return;
+                }
+                
+                const historia = data.historiaClinica;
+                const mascota = data.mascota;
+                const consultas = data.consultas || [];
+                
+                // Ocultar selector y mostrar expediente
+                document.getElementById('selectorMascota').style.display = 'none';
+                expediente.style.display = 'block';
+                
+                // Llenar información del header
+                document.getElementById('expMascotaNombre').textContent = mascota.nombre;
+                document.getElementById('expMascotaDetalles').textContent = 
+                    `${mascota.especie} · ${mascota.raza || 'Sin raza definida'} · ${mascota.sexo}`;
+                document.getElementById('expPropietario').textContent = 
+                    `Propietario: ${mascota.propietario?.nombre || 'No registrado'}`;
+                document.getElementById('expNumeroExpediente').textContent = 
+                    `N° Expediente: ${historia.numeroExpediente}`;
+                
+                // Llenar información general
+                document.getElementById('expEspecie').textContent = mascota.especie;
+                document.getElementById('expRaza').textContent = mascota.raza || 'Sin raza definida';
+                document.getElementById('expSexo').textContent = mascota.sexo;
+                document.getElementById('expFechaNacimiento').textContent = 
+                    mascota.fechaNacimiento ? new Date(mascota.fechaNacimiento).toLocaleDateString('es-CO') : 'No registrada';
+                document.getElementById('expPeso').textContent = `${mascota.peso || 0} kg`;
+                document.getElementById('expVacunas').textContent = historia.vacunasAlDia ? '✅ Sí' : '⚠️ No';
+                document.getElementById('expAlergias').textContent = historia.alergias || 'Ninguna reportada';
+                document.getElementById('expAntecedentes').textContent = historia.antecedentes || 'Sin antecedentes';
+                
+                // Llenar consultas
+                document.getElementById('expTotalConsultas').textContent = `${consultas.length} consulta${consultas.length !== 1 ? 's' : ''}`;
+                
+                if (consultas.length === 0) {
+                    consultasContenido.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon"></div>
+                            <h3>No hay consultas registradas</h3>
+                            <p>Aún no se han registrado atenciones médicas para esta mascota.</p>
+                        </div>
+                    `;
+                } else {
+                    let html = '';
+                    consultas.forEach(consulta => {
+                        const fecha = new Date(consulta.fecha).toLocaleDateString('es-CO', {
+                            year: 'numeric', month: 'long', day: 'numeric'
+                        });
+                        const hora = consulta.hora ? consulta.hora.toString() : '';
+                        
+                        html += `
+                            <div class="consulta-card">
+                                <div class="consulta-header">
+                                    <div>
+                                        <div class="consulta-fecha"> ${fecha} ${hora ? `a las ${hora}` : ''}</div>
+                                        <div style="font-size: 0.88rem; color: var(--clr-gray); margin-top: 4px;">
+                                            <strong>Motivo:</strong> ${consulta.motivo || 'No especificado'}
+                                        </div>
+                                    </div>
+                                    <div class="consulta-veterinario">
+                                        ‍⚕️ ${consulta.veterinario?.nombre || 'Veterinario no registrado'}
+                                    </div>
+                                </div>
+                                <div class="consulta-grid">
+                                    <div class="consulta-field">
+                                        <span class="consulta-field-label">Síntomas</span>
+                                        <span class="consulta-field-value">${consulta.sintomas || 'No reportados'}</span>
+                                    </div>
+                                    <div class="consulta-field">
+                                        <span class="consulta-field-label">Peso en consulta</span>
+                                        <span class="consulta-field-value"><strong>${consulta.peso || 0} kg</strong></span>
+                                    </div>
+                                    <div class="consulta-field">
+                                        <span class="consulta-field-label">Temperatura</span>
+                                        <span class="consulta-field-value">${consulta.temperatura || 'No registrada'}</span>
+                                    </div>
+                                    <div class="consulta-field" style="grid-column: 1 / -1;">
+                                        <span class="consulta-field-label">Diagnóstico</span>
+                                        <span class="consulta-field-value">${consulta.diagnostico || 'Sin diagnóstico'}</span>
+                                    </div>
+                                    <div class="consulta-field" style="grid-column: 1 / -1;">
+                                        <span class="consulta-field-label">Tratamiento</span>
+                                        <span class="consulta-field-value">${consulta.tratamiento || 'Sin tratamiento'}</span>
+                                    </div>
+                                    <div class="consulta-field" style="grid-column: 1 / -1;">
+                                        <span class="consulta-field-label">Medicamentos</span>
+                                        <span class="consulta-field-value">${consulta.medicamentos || 'Sin prescripción'}</span>
+                                    </div>
+                                    ${consulta.recomendaciones ? `
+                                        <div class="consulta-field" style="grid-column: 1 / -1;">
+                                            <span class="consulta-field-label">Recomendaciones</span>
+                                            <span class="consulta-field-value">${consulta.recomendaciones}</span>
+                                        </div>
+                                    ` : ''}
+                                    ${consulta.observaciones ? `
+                                        <div class="consulta-field" style="grid-column: 1 / -1;">
+                                            <span class="consulta-field-label">Observaciones</span>
+                                            <span class="consulta-field-value">${consulta.observaciones}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    consultasContenido.innerHTML = html;
+                }
+            } catch (err) {
+                console.error('Error al cargar historia clínica:', err);
+                expediente.style.display = 'block';
+                consultasContenido.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <h3>Error al cargar la historia clínica</h3>
+                        <p>No se pudo conectar con el servidor. Verifica que el backend esté activo.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

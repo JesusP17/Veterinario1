@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nosotros - Canopolis Clínica Veterinaria</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="header" id="navbar">
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <img src="images/logo-canopolis.png" alt="Canopolis" class="logo-image">
+                <div class="logo-text">
+                    <strong>Canopolis</strong>
+                    <small>Hospital Veterinario</small>
+                </div>
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="nosotros.html" class="nav-link active">Nosotros</a></li>
+                <li><a href="servicios.html" class="nav-link">Servicios</a></li>
+                <li><a href="contacto.html" class="nav-link">Contacto</a></li>
+                <li id="panelVetNav" style="display: none;"><a href="veterinario.html" class="nav-link">🩺 Panel Médico</a></li>
+                <li id="btnMisCitas" style="display: none;"><a href="javascript:void(0)" onclick="abrirModalMisCitas()" class="nav-link">📅 Mis Citas</a></li>
+                <li id="btnHistorialClinico" style="display: none;"><a href="historia-clinica.html" class="nav-link"> Historial</a></li>
+                
+                <!-- Botón Iniciar Sesión para móvil -->
+                <li class="mobile-auth-actions" id="mobileGuestActions" style="display: none;">
+                    <button class="btn-login mobile-btn" onclick="switchModalTab('register'); openModal('loginModal')" style="width: 100%; justify-content: center;">
+                        👤 Registrarse / Entrar
+                    </button>
+                </li>
+                
+                <!-- Badge de usuario logueado en móvil -->
+                <li class="mobile-auth-actions" id="mobileAuthSeparator" style="display: none;">
+                    <div class="user-badge" id="mobileUserBadge" style="display: none;">
+                        <div class="user-avatar" id="mobileUserAvatar">U</div>
+                        <div class="user-info">
+                            <span id="mobileUserName">Usuario</span>
+                            <span id="mobileUserRole">CLIENTE</span>
+                        </div>
+                        <button class="btn-logout" onclick="handleLogout()">Salir</button>
+                    </div>
+                </li>
+            </ul>
+            <div class="guest-actions" id="guestNavActions">
+                <button class="btn-login" onclick="switchModalTab('register'); openModal('loginModal')">👤 Registrarse / Entrar</button>
+            </div>
+            <div class="user-badge" id="userProfileBadge" style="display: none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                    <span id="userName">Usuario</span>
+                    <span id="userRole">CLIENTE</span>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Salir</button>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <span class="section-label light">⭐ Más de 12 años cuidando vidas</span>
+            <h1 class="page-hero-title">Sobre Canopolis</h1>
+            <p class="page-hero-subtitle">
+                Vocación médica, tecnología hospitalaria avanzada y el compromiso inquebrantable
+                de brindar la mejor calidad de vida a cada paciente peludo.
+            </p>
+        </div>
+    </section>
+
+    <!-- ¿Quiénes Somos? (Contenido nuevo de tu compañera) -->
+    <section class="about-story-section">
+        <div class="container">
+            <div class="story-grid">
+                <div class="story-content">
+                    <span class="section-tag">Nuestra Trayectoria</span>
+                    <h2 class="section-title">Nuestra Historia</h2>
+                    <p class="story-paragraph">
+                        Canopolis es una veterinaria dedicada al cuidado y bienestar de las mascotas.
+                        Hemos evolucionado para combinar nuestra responsable atención clínica presencial con
+                        una plataforma digital moderna. Nuestro propósito es ofrecer a los propietarios una tienda
+                        en línea segura, cómoda y confiable, disponible sin restricciones de horario.
+                    </p>
+                    <p class="story-paragraph">
+                        Nuestro equipo está plenamente comprometido con el cuidado animal, entendiendo
+                        que las mascotas son un miembro más de la familia. Por esta razón, hemos diseñado
+                        un comercio electrónico intuitivo para que adquirir los productos y agendar citas para 
+                        cuidar la salud de tu compañero sea un proceso tan sencillo, seguro y confiable como asistir
+                        a una consulta médica presencial.
+                    </p>
+                </div>
+                <div class="story-image-wrap">
+                    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&fit=crop&auto=format" alt="Equipo Canopolis" class="story-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Misión y Visión -->
+    <section class="mission-vision-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Nuestro Propósito</span>
+                <h2 class="section-title">Misión y Visión</h2>
+                <p class="section-subtitle">Los pilares que guían nuestra labor diaria</p>
+            </div>
+            <div class="mv-grid">
+                <div class="mv-card">
+                    <div class="mv-icon-circle">🎯</div>
+                    <h3>Nuestra Misión</h3>
+                    <p>
+                        Brindar atención médica veterinaria integral, ética y de la más alta calidad científica, 
+                        promoviendo el bienestar, la salud preventiva y la curación de nuestras mascotas, al tiempo que 
+                        acompañamos y educamos a sus familias con empatía, transparencia y excelencia en cada etapa de su vida.
+                    </p>
+                </div>
+                <div class="mv-card">
+                    <div class="mv-icon-circle">🔭</div>
+                    <h3>Nuestra Visión</h3>
+                    <p>
+                        Consolidarnos como el hospital veterinario líder y referente nacional en medicina especializada, 
+                        cirugía de alta complejidad y diagnóstico temprano, impulsados por la constante innovación 
+                        tecnológica, la formación médica continua y una profunda cultura de amor incondicional hacia los animales.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Valores Institucionales -->
+    <section class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Nuestros Principios</span>
+                <h2 class="section-title">Valores Institucionales</h2>
+                <p class="section-subtitle">Los pilares fundamentales que guían cada consulta y procedimiento</p>
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">❤️</div>
+                    <h4>Compromiso y Vocación</h4>
+                    <p>Cada paciente es tratado con el mismo amor, respeto y dedicación que daríamos a nuestras propias mascotas.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🔬</div>
+                    <h4>Rigor Científico</h4>
+                    <p>Prácticas médicas basadas en evidencia, protocolos internacionales y actualización continua de nuestro equipo médico.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">⚖️</div>
+                    <h4>Transparencia y Ética</h4>
+                    <p>Comunicación clara y sincera con las familias sobre diagnósticos, pronósticos, costos y alternativas terapéuticas.</p>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">🌱</div>
+                    <h4>Bienestar Integral</h4>
+                    <p>Cuidado holístico que abarca la salud física, emocional y ambiental de cada paciente durante su visita clínica.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipo Médico -->
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Equipo Profesional</span>
+                <h2 class="section-title">Nuestro Equipo Médico</h2>
+                <p class="section-subtitle">Especialistas certificados con pasión por la medicina animal</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-photo-wrap">
+                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop" alt="Dra. Valentina Morales" class="team-photo">
+                    </div>
+                    <div class="team-info">
+                        <h3>Dra. Valentina Morales</h3>
+                        <p class="team-desc">Médica Veterinaria con más de 14 años de experiencia en cirugía ortopédica y de tejidos blandos. Miembro de la Asociación Veterinaria Latinoamericana.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-photo-wrap">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop" alt="Dr. Carlos Mendoza" class="team-photo">
+                    </div>
+                    <div class="team-info">
+                        <h3>Dr. Carlos Mendoza</h3>
+                        <p class="team-desc">Apasionado por la medicina preventiva y el cuidado Cat-Friendly. Experto en endocrinología, gastroenterología y manejo de pacientes geriátricos.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-photo-wrap">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop" alt="Dra. Sofía Ramírez" class="team-photo">
+                    </div>
+                    <div class="team-info">
+                        <h3>Dra. Sofía Ramírez</h3>
+                        <p class="team-desc">Posgrado en Ultrasonografía y Radiología digital veterinaria. Encargada del área de ecocardiografía y monitoreo diagnóstico no invasivo.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-photo-wrap">
+                        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop" alt="Dr. Andrés Peña" class="team-photo">
+                    </div>
+                    <div class="team-info">
+                        <h3>Dr. Andrés Peña</h3>
+                        <p class="team-desc">Especialista en soporte vital avanzado, anestesiología y reanimación de pacientes en estado crítico con dedicación permanente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo">Canopolis</div>
+                <p>La clínica y hospital veterinario donde tu mascota es tratada con el amor incondicional, la ética y el rigor científico que merece.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Navegación</h5>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros.html">Nosotros</a></li>
+                    <li><a href="servicios.html">Servicios</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Servicios</h5>
+                <ul>
+                    <li><a href="servicios.html">Consulta General</a></li>
+                    <li><a href="servicios.html">Cirugía Especializada</a></li>
+                    <li><a href="servicios.html">Diagnóstico por Imagen</a></li>
+                    <li><a href="servicios.html">Vacunación</a></li>
+                    <li><a href="servicios.html">Estética y Spa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Contacto</h5>
+                <ul>
+                    <li>+57 (601) 800-CANOPOLIS</li>
+                    <li>citas@canopolis.com</li>
+                    <li>Av. Principal de las Mascotas #102</li>
+                    <li>Lun–Sáb: 7am – 8pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Canopolis · Clínica & Hospital Veterinario. Todos los derechos reservados.</span>
+            <span>Desarrollado con arquitectura Spring Boot 3 y MySQL.</span>
+        </div>
+    </footer>
+
+    <!-- Modal de Login/Registro -->
+    <div class="modal-overlay" id="loginModal" onclick="closeModalOutside(event, 'loginModal')">
+        <div class="modal">
+            <div class="modal-top-accent"></div>
+            <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+            <div class="modal-logo">🐾 Canopolis</div>
+            <h3 id="modalTitle">Iniciar Sesión</h3>
+            <p id="modalSubtitle">Accede al portal médico, historial clínico y gestión MySQL</p>
+            <div class="modal-tabs">
+                <button class="modal-tab-btn active" id="modalTabLogin" onclick="switchModalTab('login')">Iniciar Sesión</button>
+                <button class="modal-tab-btn" id="modalTabRegister" onclick="switchModalTab('register')">Crear Cuenta</button>
+            </div>
+            <button class="demo-fill-btn" onclick="fillDemoCredentials()">⚡ Autocompletar con credenciales demo</button>
+            <div class="form-feedback" id="authFeedback" style="display: none;"></div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Correo electrónico *</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña *</label>
+                    <div class="pwd-input-wrap">
+                        <input type="password" id="loginPassword" required>
+                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPassword')">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary full-btn" id="loginSubmitBtn">
+                    <span>Ingresar al Sistema</span>
+                </button>
+            </form>
+            <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+                <div class="form-group">
+                    <label for="regName">Nombre completo *</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Correo electrónico *</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña *</label>
+                    <div class="pwd-input-wrap">
+                        <input type="password" id="regPassword" required>
+                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPassword')">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary full-btn" id="registerSubmitBtn">
+                    <span>Crear Cuenta y Entrar</span>
+                </button>
+            </form>
+            <div class="modal-footer-text" id="modalFooterPrompt">
+                ¿No tienes cuenta? <a href="javascript:void(0)" onclick="switchModalTab('register')">Regístrate gratis</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Mis Citas -->
+    <div class="modal-overlay" id="misCitasModal" onclick="closeModalOutside(event, 'misCitasModal')">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-top-accent"></div>
+            <button class="modal-close" onclick="closeModal('misCitasModal')">✕</button>
+            <div class="modal-logo"> Canopolis</div>
+            <h3>📅 Mis Citas Médicas</h3>
+            <p>Historial y citas programadas en Canopolis</p>
+            <div id="misCitasContenido">
+                <p style="text-align: center; color: var(--clr-gray); padding: 20px;">Cargando tus citas...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

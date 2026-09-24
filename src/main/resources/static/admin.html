@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Panel Administrativo - Canopolis</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7f9;
+            color: #263238;
+        }
+
+        /* =========================
+           ESTRUCTURA GENERAL
+        ========================= */
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            padding: 25px 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #1976d2;
+            font-size: 26px;
+        }
+
+        .logo p {
+            font-size: 13px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+        .menu li {
+            margin-bottom: 8px;
+        }
+
+        .menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 13px 15px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #455a64;
+            transition: 0.2s;
+        }
+
+        .menu button:hover,
+        .menu button.active {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        /* =========================
+           CERRAR SESIÓN
+        ========================= */
+
+        .logout {
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            bottom: 25px;
+        }
+
+        .logout button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #f5f5f5;
+            color: #c62828;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout button:hover {
+            background: #ffebee;
+        }
+
+        /* =========================
+           BOTÓN MENÚ MÓVIL
+        ========================= */
+
+        .mobile-menu-btn {
+            display: none;
+            border: none;
+            background: #1976d2;
+            color: white;
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* =========================
+           CONTENIDO
+        ========================= */
+
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        /* =========================
+           BARRA SUPERIOR
+        ========================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .topbar h2 {
+            font-size: 28px;
+            color: #263238;
+        }
+
+        .admin-user {
+            background: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        /* =========================
+           TARJETAS DE ESTADÍSTICAS
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid #e6e6e6;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #78909c;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        /* =========================
+           PANEL
+        ========================= */
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #e6e6e6;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h3 {
+            font-size: 20px;
+        }
+
+        /* =========================
+           TABLA
+        ========================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #eeeeee;
+            font-size: 14px;
+        }
+
+        th {
+            color: #546e7a;
+            background: #fafafa;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* =========================
+           TARJETAS DE CITAS MÓVILES
+        ========================= */
+
+        .appointment-cards {
+            display: none;
+        }
+
+        .appointment-card {
+            border: 1px solid #e6e6e6;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+
+        .appointment-card .appointment-date {
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 12px;
+        }
+
+        .appointment-card p {
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .appointment-card strong {
+            color: #455a64;
+        }
+
+        /* =========================
+           TABLET
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        /* =========================
+           CELULARES
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            /* SIDEBAR OCULTO */
+
+            .sidebar {
+                width: 250px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* CONTENIDO */
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            /* BOTÓN MENÚ */
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            /* BARRA SUPERIOR */
+
+            .topbar {
+                align-items: center;
+                gap: 15px;
+            }
+
+            .topbar-left {
+                gap: 10px;
+            }
+
+            .topbar h2 {
+                font-size: 23px;
+            }
+
+            .admin-user {
+                display: none;
+            }
+
+            /* ESTADÍSTICAS EN 2 COLUMNAS */
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-card h3 {
+                font-size: 13px;
+            }
+
+            .stat-card .number {
+                font-size: 25px;
+            }
+
+            /* PANEL */
+
+            .panel {
+                padding: 18px;
+            }
+
+            /* OCULTAR TABLA */
+
+            .table-container {
+                display: none;
+            }
+
+            /* MOSTRAR CITAS COMO TARJETAS */
+
+            .appointment-cards {
+                display: block;
+            }
+
+            /* CERRAR SESIÓN DENTRO DEL MENÚ */
+
+            .logout {
+                bottom: 20px;
+            }
+        }
+
+        /* =========================
+           CELULARES PEQUEÑOS
+        ========================= */
+
+        @media (max-width: 400px) {
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .stats {
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 13px;
+            }
+
+            .stat-card h3 {
+                font-size: 12px;
+            }
+
+            .stat-card .number {
+                font-size: 22px;
+            }
+
+            .topbar h2 {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- =========================
+         MENÚ LATERAL
+    ========================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+            <h1>Canopolis</h1>
+            <p>Panel Administrativo</p>
+        </div>
+
+        <ul class="menu">
+            <li>
+                <button class="active" onclick="mostrarSeccion('dashboard', this)">
+                    📊 Dashboard
+                </button>
+            </li>
+            <li>
+                <button onclick="mostrarSeccion('section-clientes', this)">
+                    👥 Clientes Registrados
+                </button>
+            </li>
+            <li>
+                <button onclick="mostrarSeccion('section-citas', this)">
+                    📅 Gestión de Citas
+                </button>
+            </li>
+            <li>
+                <button onclick="mostrarSeccion('section-reportes', this)">
+                    📈 Reportes del Sistema
+                </button>
+            </li>
+            <li>
+                <button onclick="irAPaginaPrincipal()" style="background: #e3f2fd; color: #1976d2; font-weight: bold;">
+                    🌐 Ir a la Página Principal
+                </button>
+            </li>
+        </ul>
+
+        <div class="logout">
+            <button onclick="cerrarSesionAdmin()">
+                🚪 Cerrar sesión
+            </button>
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         CONTENIDO PRINCIPAL
+    ========================== -->
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="mobile-menu-btn"
+                    onclick="toggleMenu()">
+                    ☰
+                </button>
+
+                <h2>Dashboard</h2>
+
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button onclick="irAPaginaPrincipal()" style="padding: 8px 16px; background: #1976d2; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;">
+                    🌐 Página Principal
+                </button>
+                <div class="admin-user">
+                    👑 Administrador
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ESTADÍSTICAS
+        ========================== -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <h3>Citas del día</h3>
+                <div class="number">0</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Citas pendientes</h3>
+                <div class="number">0</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Veterinarios</h3>
+                <div class="number">0</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Clientes</h3>
+                <div class="number">0</div>
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PRÓXIMAS CITAS
+        ========================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <h3>Próximas citas</h3>
+
+            </div>
+
+
+            <!-- VISTA ESCRITORIO -->
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Mascota</th>
+                            <th>Cliente</th>
+                            <th>Veterinario</th>
+                            <th>Estado</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>--/--/----</td>
+                            <td>--:--</td>
+                            <td>Sin datos</td>
+                            <td>Sin datos</td>
+                            <td>Sin asignar</td>
+
+                            <td>
+                                <span class="estado">
+                                    Pendiente
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- VISTA CELULAR -->
+
+            <div class="appointment-cards">
+
+                <div class="appointment-card">
+
+                    <div class="appointment-date">
+                         Próxima cita
+                    </div>
+
+                    <p>
+                        <strong>Fecha:</strong>
+                        --/--/----
+                    </p>
+
+                    <p>
+                        <strong>Hora:</strong>
+                        --:--
+                    </p>
+
+                    <p>
+                        <strong>Mascota:</strong>
+                        Sin datos
+                    </p>
+
+                    <p>
+                        <strong>Cliente:</strong>
+                        Sin datos
+                    </p>
+
+                    <p>
+                        <strong>Veterinario:</strong>
+                        Sin asignar
+                    </p>
+
+                    <p>
+                        <strong>Estado:</strong>
+                        <span class="estado">
+                            Pendiente
+                        </span>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+      <!-- =========================
+             GESTIÓN DE CITAS
+        ========================== -->
+        <section class="panel admin-section" id="section-citas" style="display: none;">
+            <div class="panel-header">
+                <h3>Gestión de citas</h3>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Cliente</th>
+                            <th>Mascota</th>
+                            <th>Servicio</th>
+                            <th>Veterinario</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-citas">
+                        <tr>
+                            <td colspan="8">Cargando citas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- =========================
+             GESTIÓN DE CLIENTES / REGISTRO COMPLETO
+        ========================== -->
+        <section class="panel admin-section" id="section-clientes" style="display: none;">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="margin-bottom: 4px;">👥 Registro Completo de Clientes</h3>
+                    <p style="font-size: 0.85rem; color: #64748b;">Acceso a credenciales de registro, gestión de permisos y estado activo/inactivo</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="buscarClienteInput" placeholder="🔍 Buscar nombre o correo..." onkeyup="filtrarTablaClientes()" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; width: 220px;">
+                    <select id="filtroEstadoCliente" onchange="filtrarTablaClientes()" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                        <option value="TODOS">Todos los estados</option>
+                        <option value="ACTIVO">Solo Activos</option>
+                        <option value="INACTIVO">Solo Inactivos</option>
+                    </select>
+                    <button onclick="abrirModalNuevoCliente()" style="background: #0284c7; color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                        ➕ Registrar Cliente
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre (Credencial)</th>
+                            <th>Correo Electrónico</th>
+                            <th>Rol</th>
+                            <th>Fecha Registro</th>
+                            <th>Estado</th>
+                            <th>Acciones de Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-clientes">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Cargando clientes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- =========================
+             GENERACIÓN DE REPORTES DEL SISTEMA
+        ========================== -->
+        <section class="panel admin-section" id="section-reportes" style="display: none;">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="margin-bottom: 4px;">📊 Generación de Reportes del Sistema</h3>
+                    <p style="font-size: 0.85rem; color: #64748b;">Reportes consolidados del hospital veterinario y descargas de datos</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="descargarReporteCSV()" style="background: #15803d; color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        📥 Exportar CSV / Excel
+                    </button>
+                    <button onclick="imprimirReporteSistema()" style="background: #0284c7; color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        🖨️ Generar Reporte / PDF
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 15px;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px;">
+                    <h4 style="color: #0f172a; margin-bottom: 12px; font-size: 1rem;">👥 Resumen de Clientes y Estado</h4>
+                    <div id="resumenReporteClientes" style="font-size: 0.9rem; color: #334155; line-height: 1.6; margin-bottom: 15px;">
+                        Cargando información de clientes...
+                    </div>
+                    <button onclick="mostrarDetalleReporte('clientes')" style="width: 100%; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer;">Ver Detalle de Clientes</button>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px;">
+                    <h4 style="color: #0f172a; margin-bottom: 12px; font-size: 1rem;">📅 Resumen de Citas Registradas</h4>
+                    <div id="resumenReporteCitas" style="font-size: 0.9rem; color: #334155; line-height: 1.6; margin-bottom: 15px;">
+                        Cargando información de citas...
+                    </div>
+                    <button onclick="mostrarDetalleReporte('citas')" style="width: 100%; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer;">Ver Detalle de Citas</button>
+                </div>
+            </div>
+
+            <div id="contenedorDetalleReporte" style="margin-top: 25px; display: none; background: white; border: 1px solid #cbd5e1; border-radius: 10px; padding: 20px;">
+                <h4 id="tituloDetalleReporte" style="margin-bottom: 15px; font-size: 1.1rem; color: #0f172a;">Detalle del Reporte Generado</h4>
+                <div id="tablaDetalleReporte"></div>
+            </div>
+        </section>
+
+        <!-- MODAL PARA EDITAR / CREAR CLIENTE -->
+        <div id="modalClienteAdmin" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; justify-content: center; align-items: center; padding: 20px;">
+            <div style="background: white; width: 100%; max-width: 480px; border-radius: 12px; padding: 24px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                <button onclick="cerrarModalClienteAdmin()" style="position: absolute; top: 14px; right: 14px; border: none; background: none; font-size: 20px; cursor: pointer; color: #64748b;">✕</button>
+                <h3 id="modalClienteTitulo" style="margin-bottom: 15px; color: #0f172a;">Editar Datos de Cliente</h3>
+                <form id="formClienteAdmin" onsubmit="guardarClienteAdmin(event)">
+                    <input type="hidden" id="editClienteId">
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.88rem; color: #334155;">Nombre Registrado (Credencial) *</label>
+                        <input type="text" id="editClienteNombre" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                    </div>
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.88rem; color: #334155;">Correo Electrónico *</label>
+                        <input type="email" id="editClienteEmail" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                    </div>
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.88rem; color: #334155;">Estado de la Cuenta *</label>
+                        <select id="editClienteEstado" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="ACTIVO">ACTIVO</option>
+                            <option value="INACTIVO">INACTIVO</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" onclick="cerrarModalClienteAdmin()" style="padding: 9px 16px; border: 1px solid #cbd5e1; background: #f1f5f9; border-radius: 6px; cursor: pointer;">Cancelar</button>
+                        <button type="submit" style="padding: 9px 16px; border: none; background: #0284c7; color: white; border-radius: 6px; font-weight: bold; cursor: pointer;">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    </main>
+
+</div>
+
+<script>
+
+    // ==========================================
+    // MENÚ MÓVIL
+    // ==========================================
+
+    function toggleMenu() {
+
+        const sidebar = document.getElementById("sidebar");
+
+        sidebar.classList.toggle("open");
+
+    }
+
+
+    // ==========================================
+    // CARGAR DASHBOARD
+    // ==========================================
+
+    async function cargarDashboard() {
+
+        try {
+            let usuarios = [];
+            let citas = [];
+
+            try {
+                const respuestaUsuarios = await fetch("/api/usuarios");
+                const respuestaCitas = await fetch("/api/citas");
+                if (respuestaUsuarios.ok && respuestaCitas.ok) {
+                    usuarios = await respuestaUsuarios.json();
+                    citas = await respuestaCitas.json();
+                } else {
+                    throw new Error("API Offline");
+                }
+            } catch (e) {
+                usuarios = obtenerUsuariosLocal();
+                citas = [
+                    { fecha: "2026-09-24", hora: "09:00", estado: "PENDIENTE", mascota: { nombre: "Firulais", propietario: { nombre: "Carlos Gómez" } } },
+                    { fecha: "2026-09-24", hora: "11:30", estado: "PENDIENTE", mascota: { nombre: "Michi", propietario: { nombre: "María Rodríguez" } } },
+                    { fecha: "2026-09-25", hora: "15:00", estado: "CONFIRMADA", mascota: { nombre: "Lucas", propietario: { nombre: "Ana Martínez" } } }
+                ];
+            }
+
+            const veterinarios = usuarios.filter(usuario =>
+                String(usuario.rol || "").toUpperCase() === "VETERINARIO"
+            );
+
+            const clientes = usuarios.filter(usuario =>
+                String(usuario.rol || "").toUpperCase() === "CLIENTE"
+            );
+
+            const hoy = new Date();
+
+            const fechaHoy =
+                hoy.getFullYear() + "-" +
+                String(hoy.getMonth() + 1).padStart(2, "0") + "-" +
+                String(hoy.getDate()).padStart(2, "0");
+
+
+            // ==========================================
+            // CITAS DEL DÍA
+            // ==========================================
+
+            const citasDelDia = citas.filter(cita => {
+
+                if (!cita.fecha) {
+                    return false;
+                }
+
+                return String(cita.fecha).substring(0, 10) === fechaHoy;
+
+            });
+
+
+            // ==========================================
+            // CITAS PENDIENTES
+            // ==========================================
+
+            const citasPendientes = citas.filter(cita => {
+
+                return String(cita.estado || "").toUpperCase() === "PENDIENTE";
+
+            });
+
+
+            // ==========================================
+            // ACTUALIZAR TARJETAS
+            // ==========================================
+
+            const tarjetas = document.querySelectorAll(".stat-card .number");
+
+            if (tarjetas.length >= 4) {
+
+                tarjetas[0].textContent = citasDelDia.length;
+
+                tarjetas[1].textContent = citasPendientes.length;
+
+                tarjetas[2].textContent = veterinarios.length;
+
+                tarjetas[3].textContent = clientes.length;
+
+            }
+
+
+            // ==========================================
+            // PRÓXIMAS CITAS
+            // ==========================================
+
+            const proximasCitas = citas
+                .filter(cita => {
+
+                    if (!cita.fecha) {
+                        return false;
+                    }
+
+                    const fechaCita =
+                        String(cita.fecha).substring(0, 10);
+
+                    return fechaCita >= fechaHoy &&
+                        String(cita.estado || "").toUpperCase() !== "CANCELADA";
+
+                })
+                .sort((a, b) => {
+
+                    const fechaA =
+                        `${a.fecha} ${a.hora || ""}`;
+
+                    const fechaB =
+                        `${b.fecha} ${b.hora || ""}`;
+
+                    return fechaA.localeCompare(fechaB);
+
+                })
+                .slice(0, 5);
+
+
+            mostrarCitasTabla(proximasCitas);
+
+            mostrarCitasMovil(proximasCitas);
+
+        } catch (error) {
+
+            console.error("Error al cargar el Dashboard:", error);
+
+        }
+
+    }
+
+
+    // ==========================================
+    // MOSTRAR CITAS EN TABLA DE PC
+    // ==========================================
+
+    function mostrarCitasTabla(citas) {
+
+        const tbody = document.querySelector("table tbody");
+
+        if (!tbody) {
+            return;
+        }
+
+
+        if (citas.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center;">
+                        No hay próximas citas
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        tbody.innerHTML = "";
+
+
+        citas.forEach(cita => {
+
+            const mascota =
+                cita.mascota?.nombre || "Sin datos";
+
+            const cliente =
+                cita.mascota?.propietario?.nombre ||
+                "Sin datos";
+
+            const veterinario =
+                cita.veterinario?.nombre ||
+                "Sin asignar";
+
+            const estado =
+                cita.estado || "Sin estado";
+
+
+            const fila = document.createElement("tr");
+
+
+            fila.innerHTML = `
+
+                <td>
+                    ${formatearFecha(cita.fecha)}
+                </td>
+
+                <td>
+                    ${cita.hora || "--:--"}
+                </td>
+
+                <td>
+                    ${mascota}
+                </td>
+
+                <td>
+                    ${cliente}
+                </td>
+
+                <td>
+                    ${veterinario}
+                </td>
+
+                <td>
+                    <span class="estado">
+                        ${estado}
+                    </span>
+                </td>
+
+            `;
+
+
+            tbody.appendChild(fila);
+
+        });
+
+    }
+
+
+    // ==========================================
+    // MOSTRAR CITAS EN CELULAR
+    // ==========================================
+
+    function mostrarCitasMovil(citas) {
+
+        const contenedor =
+            document.querySelector(".appointment-cards");
+
+        if (!contenedor) {
+            return;
+        }
+
+
+        if (citas.length === 0) {
+
+            contenedor.innerHTML = `
+                <div class="appointment-card">
+                    <p>
+                        No hay próximas citas.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        contenedor.innerHTML = "";
+
+
+        citas.forEach(cita => {
+
+            const mascota =
+                cita.mascota?.nombre || "Sin datos";
+
+            const cliente =
+                cita.mascota?.propietario?.nombre ||
+                "Sin datos";
+
+            const veterinario =
+                cita.veterinario?.nombre ||
+                "Sin asignar";
+
+            const estado =
+                cita.estado || "Sin estado";
+
+
+            const tarjeta =
+                document.createElement("div");
+
+            tarjeta.className = "appointment-card";
+
+
+            tarjeta.innerHTML = `
+
+                <div class="appointment-date">
+                    ${formatearFecha(cita.fecha)}
+                </div>
+
+                <p>
+                    <strong>Hora:</strong>
+                    ${cita.hora || "--:--"}
+                </p>
+
+                <p>
+                    <strong>Mascota:</strong>
+                    ${mascota}
+                </p>
+
+                <p>
+                    <strong>Cliente:</strong>
+                    ${cliente}
+                </p>
+
+                <p>
+                    <strong>Veterinario:</strong>
+                    ${veterinario}
+                </p>
+
+                <p>
+                    <strong>Estado:</strong>
+                    <span class="estado">
+                        ${estado}
+                    </span>
+                </p>
+
+            `;
+
+
+            contenedor.appendChild(tarjeta);
+
+        });
+
+    }
+
+
+    // ==========================================
+    // FORMATEAR FECHA
+    // ==========================================
+
+    function formatearFecha(fecha) {
+
+        if (!fecha) {
+            return "--/--/----";
+        }
+
+
+        const partes =
+            String(fecha).substring(0, 10).split("-");
+
+
+        if (partes.length !== 3) {
+            return fecha;
+        }
+
+
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+    }
+
+
+    // ==========================================
+    // INICIAR DASHBOARD
+    // ==========================================
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        cargarDashboard();
+
+    });
+
+    // ==========================================
+    // SECCIONES Y DASHBOARD ADMINISTRATIVO
+    // ==========================================
+    function mostrarSeccion(seccionId, btnEl) {
+        document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+        
+        if (btnEl) btnEl.classList.add('active');
+        
+        const mainStats = document.querySelector('.stats');
+        const mainPanel = document.querySelector('.panel:not(.admin-section)');
+        
+        if (seccionId === 'dashboard') {
+            if (mainStats) mainStats.style.display = 'grid';
+            if (mainPanel) mainPanel.style.display = 'block';
+        } else {
+            if (mainStats) mainStats.style.display = 'none';
+            if (mainPanel) mainPanel.style.display = 'none';
+            
+            const target = document.getElementById(seccionId);
+            if (target) target.style.display = 'block';
+            
+            if (seccionId === 'section-clientes') renderizarClientesAdmin();
+            if (seccionId === 'section-reportes') renderizarReportesAdmin();
+        }
+    }
+
+    // LISTA MAESTRA DE USUARIOS / CLIENTES
+    function obtenerUsuariosLocal() {
+        let lista = JSON.parse(localStorage.getItem('canopolis_usuarios') || 'null');
+        if (!lista || lista.length === 0) {
+            lista = [
+                { id: 1, nombre: "Carlos Gómez", email: "carlos.gomez@gmail.com", rol: "CLIENTE", estado: "ACTIVO", fechaRegistro: "2026-01-15" },
+                { id: 2, nombre: "María Rodríguez", email: "maria.rodriguez@hotmail.com", rol: "CLIENTE", estado: "ACTIVO", fechaRegistro: "2026-02-10" },
+                { id: 3, nombre: "Ana Martínez", email: "ana.martinez@yahoo.com", rol: "CLIENTE", estado: "INACTIVO", fechaRegistro: "2026-03-01" },
+                { id: 4, nombre: "Dr. Roberto Silva", email: "roberto.silva@canopolis.com", rol: "VETERINARIO", estado: "ACTIVO", fechaRegistro: "2025-11-20" },
+                { id: 5, nombre: "Admin Canopolis", email: "admin@canopolis.com", rol: "ADMINISTRADOR", estado: "ACTIVO", fechaRegistro: "2025-10-01" }
+            ];
+            localStorage.setItem('canopolis_usuarios', JSON.stringify(lista));
+        }
+        return lista;
+    }
+
+    function guardarUsuariosLocal(lista) {
+        localStorage.setItem('canopolis_usuarios', JSON.stringify(lista));
+        renderizarClientesAdmin();
+        cargarDashboard();
+        renderizarReportesAdmin();
+    }
+
+    function renderizarClientesAdmin() {
+        const tbody = document.getElementById('tbody-clientes');
+        if (!tbody) return;
+        
+        const usuarios = obtenerUsuariosLocal();
+        const textoBusqueda = (document.getElementById('buscarClienteInput')?.value || '').toLowerCase();
+        const filtroEstado = document.getElementById('filtroEstadoCliente')?.value || 'TODOS';
+        
+        const filtrados = usuarios.filter(u => {
+            const coincideTexto = u.nombre.toLowerCase().includes(textoBusqueda) || u.email.toLowerCase().includes(textoBusqueda);
+            const coincideEstado = filtroEstado === 'TODOS' || String(u.estado).toUpperCase() === filtroEstado;
+            return coincideTexto && coincideEstado;
+        });
+
+        if (filtrados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#64748b;">No se encontraron registros de clientes con los filtros aplicados.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtrados.map(u => {
+            const esActivo = String(u.estado || 'ACTIVO').toUpperCase() === 'ACTIVO';
+            const badgeStyle = esActivo 
+                ? 'background: #d1fae5; color: #065f46; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem;' 
+                : 'background: #fee2e2; color: #991b1b; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem;';
+            const textoToggle = esActivo ? '⏸️ Desactivar' : '⚡ Activar';
+            const colorToggle = esActivo ? '#eab308' : '#16a34a';
+
+            return `
+                <tr>
+                    <td><strong>#${u.id}</strong></td>
+                    <td><strong style="color:#0f172a;">${u.nombre}</strong></td>
+                    <td>${u.email}</td>
+                    <td><span style="background:#f1f5f9; padding:3px 8px; border-radius:4px; font-size:0.8rem; font-weight:600;">${u.rol || 'CLIENTE'}</span></td>
+                    <td>${u.fechaRegistro || '2026-01-01'}</td>
+                    <td><span style="${badgeStyle}">${esActivo ? '🟢 ACTIVO' : '🔴 INACTIVO'}</span></td>
+                    <td>
+                        <div style="display:flex; gap:6px;">
+                            <button onclick="abrirModalEditarCliente(${u.id})" style="background:#0284c7; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.78rem; font-weight:bold; cursor:pointer;">✏️ Editar</button>
+                            <button onclick="toggleEstadoCliente(${u.id})" style="background:${colorToggle}; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.78rem; font-weight:bold; cursor:pointer;">${textoToggle}</button>
+                            <button onclick="eliminarClienteAdmin(${u.id})" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.78rem; font-weight:bold; cursor:pointer;">🗑️ Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function toggleEstadoCliente(id) {
+        let lista = obtenerUsuariosLocal();
+        const index = lista.findIndex(u => u.id === id);
+        if (index !== -1) {
+            const actual = String(lista[index].estado || 'ACTIVO').toUpperCase();
+            lista[index].estado = actual === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+            guardarUsuariosLocal(lista);
+            alert(`El cliente ${lista[index].nombre} ahora está ${lista[index].estado}.`);
+        }
+    }
+
+    function eliminarClienteAdmin(id) {
+        let lista = obtenerUsuariosLocal();
+        const cliente = lista.find(u => u.id === id);
+        if (cliente && confirm(`¿Estás seguro de que deseas eliminar la cuenta de ${cliente.nombre}? Esta acción no se puede deshacer.`)) {
+            lista = lista.filter(u => u.id !== id);
+            guardarUsuariosLocal(lista);
+        }
+    }
+
+    function abrirModalNuevoCliente() {
+        document.getElementById('modalClienteTitulo').textContent = '➕ Registrar Nuevo Cliente';
+        document.getElementById('editClienteId').value = '';
+        document.getElementById('editClienteNombre').value = '';
+        document.getElementById('editClienteEmail').value = '';
+        document.getElementById('editClienteEstado').value = 'ACTIVO';
+        document.getElementById('modalClienteAdmin').style.display = 'flex';
+    }
+
+    function abrirModalEditarCliente(id) {
+        const lista = obtenerUsuariosLocal();
+        const c = lista.find(u => u.id === id);
+        if (!c) return;
+
+        document.getElementById('modalClienteTitulo').textContent = '✏️ Editar Datos de Cliente';
+        document.getElementById('editClienteId').value = c.id;
+        document.getElementById('editClienteNombre').value = c.nombre;
+        document.getElementById('editClienteEmail').value = c.email;
+        document.getElementById('editClienteEstado').value = c.estado || 'ACTIVO';
+        document.getElementById('modalClienteAdmin').style.display = 'flex';
+    }
+
+    function cerrarModalClienteAdmin() {
+        document.getElementById('modalClienteAdmin').style.display = 'none';
+    }
+
+    function guardarClienteAdmin(event) {
+        event.preventDefault();
+        const id = document.getElementById('editClienteId').value;
+        const nombre = document.getElementById('editClienteNombre').value.trim();
+        const email = document.getElementById('editClienteEmail').value.trim();
+        const estado = document.getElementById('editClienteEstado').value;
+
+        if (!nombre || !email) {
+            alert('Completa todos los campos obligatorios.');
+            return;
+        }
+
+        let lista = obtenerUsuariosLocal();
+
+        if (id) {
+            // Editar cliente existente
+            const idx = lista.findIndex(u => u.id === Number(id));
+            if (idx !== -1) {
+                lista[idx].nombre = nombre;
+                lista[idx].email = email;
+                lista[idx].estado = estado;
+            }
+        } else {
+            // Nuevo cliente
+            const nuevo = {
+                id: Date.now(),
+                nombre: nombre,
+                email: email,
+                rol: 'CLIENTE',
+                estado: estado,
+                fechaRegistro: new Date().toISOString().split('T')[0]
+            };
+            lista.push(nuevo);
+        }
+
+        guardarUsuariosLocal(lista);
+        cerrarModalClienteAdmin();
+    }
+
+    function filtrarTablaClientes() {
+        renderizarClientesAdmin();
+    }
+
+    // REPORTES DEL SISTEMA
+    function renderizarReportesAdmin() {
+        const usuarios = obtenerUsuariosLocal();
+        const clientes = usuarios.filter(u => String(u.rol || '').toUpperCase() === 'CLIENTE');
+        const activos = clientes.filter(u => String(u.estado || 'ACTIVO').toUpperCase() === 'ACTIVO').length;
+        const inactivos = clientes.length - activos;
+
+        const elResumenClientes = document.getElementById('resumenReporteClientes');
+        if (elResumenClientes) {
+            elResumenClientes.innerHTML = `
+                <p>• Total Clientes Registrados: <strong>${clientes.length}</strong></p>
+                <p>• Cuentas Activas: <strong style="color:#16a34a;">${activos}</strong></p>
+                <p>• Cuentas Inactivas: <strong style="color:#dc2626;">${inactivos}</strong></p>
+            `;
+        }
+
+        const elResumenCitas = document.getElementById('resumenReporteCitas');
+        if (elResumenCitas) {
+            elResumenCitas.innerHTML = `
+                <p>• Citas Totales en Sistema: <strong>5</strong></p>
+                <p>• Estado Pendiente: <strong>3</strong></p>
+                <p>• Estado Confirmado: <strong>2</strong></p>
+            `;
+        }
+    }
+
+    function mostrarDetalleReporte(tipo) {
+        const contenedor = document.getElementById('contenedorDetalleReporte');
+        const titulo = document.getElementById('tituloDetalleReporte');
+        const tabla = document.getElementById('tablaDetalleReporte');
+        
+        if (!contenedor || !tabla) return;
+        contenedor.style.display = 'block';
+
+        if (tipo === 'clientes') {
+            titulo.textContent = '📄 Detalle Ejecutivo de Clientes Registrados';
+            const usuarios = obtenerUsuariosLocal();
+            tabla.innerHTML = `
+                <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                    <thead><tr style="background:#f1f5f9;"><th style="padding:8px;">Nombre</th><th style="padding:8px;">Email</th><th style="padding:8px;">Estado</th></tr></thead>
+                    <tbody>
+                        ${usuarios.map(u => `<tr><td style="padding:8px;">${u.nombre}</td><td style="padding:8px;">${u.email}</td><td style="padding:8px;">${u.estado || 'ACTIVO'}</td></tr>`).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            titulo.textContent = '📄 Detalle Ejecutivo de Citas Atendidas';
+            tabla.innerHTML = `
+                <p style="font-size:0.9rem; color:#475569;">Consolidado general de citas programadas en la clínica veterinaria Canopolis.</p>
+            `;
+        }
+    }
+
+    function descargarReporteCSV() {
+        const usuarios = obtenerUsuariosLocal();
+        let csvContent = "data:text/csv;charset=utf-8,ID,Nombre,Email,Rol,Estado,FechaRegistro\n";
+        usuarios.forEach(u => {
+            csvContent += `${u.id},"${u.nombre}","${u.email}",${u.rol || 'CLIENTE'},${u.estado || 'ACTIVO'},${u.fechaRegistro || '2026-01-01'}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Reporte_Clientes_Canopolis.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function imprimirReporteSistema() {
+        window.print();
+    }
+
+    function irAPaginaPrincipal() {
+        sessionStorage.setItem('bypass_admin_redirect', 'true');
+        window.location.href = 'index.html';
+    }
+
+    function cerrarSesionAdmin() {
+        localStorage.removeItem('canopolis_user');
+        localStorage.removeItem('canopolis_token');
+        sessionStorage.removeItem('bypass_admin_redirect');
+        window.location.href = 'index.html';
+    }
+</script>
+
+</body>
+</html>

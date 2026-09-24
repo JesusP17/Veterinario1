@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Canopolis  Veterinaria</title>
+    <meta name="description" content="Ponte en contacto con Canopolis Clínica Veterinaria. Horarios, líneas directas, formulario y ubicación.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Banner de estado del backend -->
+    <div id="backendBanner" style="display:none; background:#fef3c7; border-bottom:1px solid #f59e0b; padding:10px 24px; text-align:center; font-size:0.88rem; color:#92400e; font-weight:600;">
+        ⚠️ Modo demostración: El servidor backend no está disponible. Algunas funciones pueden no funcionar correctamente.
+    </div>
+
+    <!-- Header/Navbar -->
+    <header id="navbar" class="header">
+       
+      <nav class="navbar">
+    <a href="index.html" class="logo">
+        <img src="images/logo-canopolis.png" alt="Canopolis" class="logo-image">
+        <div class="logo-text">
+            <strong>Canopolis</strong>
+            <small>Hospital Veterinario</small>
+        </div>
+    </a>
+    
+    <!-- Botón Hamburguesa para Móviles -->
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <ul class="nav-menu" id="navMenu">
+        <!-- Enlaces comunes para todos -->
+        <li><a href="index.html" class="nav-link active">Inicio</a></li>
+        <li><a href="nosotros.html" class="nav-link">Nosotros</a></li>
+        <li><a href="servicios.html" class="nav-link">Servicios</a></li>
+        <li><a href="contacto.html" class="nav-link">Contacto</a></li>
+        
+        <!-- ENLACES CONDICIONALES SEGÚN ROL -->
+        
+        <!-- Panel Médico (SOLO VETERINARIO/ADMIN) -->
+        <li id="panelVetNav" style="display: none;">
+            <a href="veterinario.html" class="nav-link" onclick="accederPanelMedico(event)"> Panel Médico</a>
+        </li>
+        
+        <!-- Mis Citas (SOLO CLIENTE) -->
+        <li id="btnMisCitas" style="display: none;">
+            <a href="javascript:void(0)" class="nav-link" onclick="abrirModalMisCitas()"> Mis Citas</a>
+        </li>
+        
+        <!-- Historial Clínico (SOLO CLIENTE) -->
+        <li id="btnHistorialClinico" style="display: none;">
+            <a href="historia-clinica.html" class="nav-link"> Historial</a>
+        </li>
+        
+        <!-- SEPARADOR para elementos de autenticación en móvil -->
+        <li class="mobile-auth-actions" id="mobileAuthSeparator" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--clr-border);"></li>
+        
+        <!-- Botón Login / Registro (cuando NO está logueado) - MÓVIL -->
+        <li class="mobile-auth-actions" id="mobileGuestActions">
+            <button class="btn-login mobile-btn" onclick="switchModalTab('register'); openModal('loginModal')">
+                👤 Registrarse / Entrar
+            </button>
+        </li>
+        
+        <!-- Badge de usuario logueado - MÓVIL -->
+        <li class="mobile-auth-actions" id="mobileUserBadge" style="display: none;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="user-avatar" id="mobileUserAvatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--clr-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">U</div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span id="mobileUserName" style="font-weight: 700; font-size: 0.85rem; color: var(--clr-secondary);">Usuario</span>
+                        <span id="mobileUserRole" style="font-size: 0.7rem; color: var(--clr-gray); font-weight: 600;">CLIENTE</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()" style="font-size: 0.75rem; padding: 4px 10px;">Salir</button>
+            </div>
+        </li>
+    </ul>
+    
+    <!-- Botón Login / Registro (cuando NO está logueado) - DESKTOP -->
+    <div class="guest-actions" id="guestNavActions">
+        <button class="btn-login" onclick="switchModalTab('register'); openModal('loginModal')">
+            👤 Registrarse / Entrar
+        </button>
+    </div>
+    
+    <!-- Badge de usuario logueado - DESKTOP -->
+    <div class="user-badge" id="userProfileBadge" style="display: none;">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-info">
+            <span id="userName">Usuario</span>
+            <span id="userRole">CLIENTE</span>
+        </div>
+        <button class="btn-logout" onclick="handleLogout()">Salir</button>
+    </div>
+</nav>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <span class="section-tag">📍 Canales de Comunicación Inmediata</span>
+            <h1 class="page-hero-title">Contáctanos</h1>
+            <p class="page-hero-subtitle">
+                Estamos aquí para atenderte, resolver tus dudas y cuidar la salud de tu mascota.
+                Comunícate por nuestras líneas directas o déjanos un mensaje.
+            </p>
+        </div>
+    </section>
+
+    <!-- Información de Contacto -->
+    <section class="contact-main-section">
+        <div class="about-container">
+            <div class="section-header">
+                <span class="section-tag">ATENCIÓN AL CLIENTE</span>
+                <h2 class="section-title">Información de la Clínica</h2>
+                <p class="section-subtitle">
+                    Múltiples canales siempre a tu disposición
+                </p>
+            </div>
+
+            <div class="contact-card-list">
+                <!-- Teléfono -->
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">📞</div>
+                    <div class="contact-info-text">
+                        <h4>Líneas Telefónicas Directas</h4>
+                        <p><strong>PBX Principal:</strong> +57 (601) 800-CANOPOLIS</p>
+                        <p><strong>WhatsApp Urgencias:</strong> +57 (300) 800-2266</p>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">✉️</div>
+                    <div class="contact-info-text">
+                        <h4>Correos Electrónicos</h4>
+                        <p><strong>Citas Médicas:</strong> citas@canopolis.com</p>
+                        <p><strong>Atención General:</strong> info@canopolis.com</p>
+                    </div>
+                </div>
+
+                <!-- Ubicación -->
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">📍</div>
+                    <div class="contact-info-text">
+                        <h4>Ubicación de la Sede Central</h4>
+                        <p>Av. Principal de las Mascotas #102, Ciudad</p>
+                        <p class="contact-subtext">Estacionamiento exclusivo para pacientes y rampa de acceso para emergencias.</p>
+                    </div>
+                </div>
+
+                <!-- Horarios -->
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">🕐</div>
+                    <div class="contact-info-text">
+                        <h4>Horarios de Consulta y Servicios</h4>
+                        <p><strong>Lunes a Sábado:</strong> 7:00 am – 8:00 pm</p>
+                        <p><strong>Domingos y Festivos:</strong> 8:00 am – 6:00 pm</p>
+                        <p><strong>Hospitalización y Urgencias:</strong> 24 Horas / 7 Días</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulario de Contacto -->
+    <section class="contact-main-section" id="formulario" style="background: var(--clr-light);">
+        <div class="about-container">
+            <div class="contact-two-columns">
+                <div>
+                    <span class="section-tag">MENSAJE DIRECTO</span>
+                    <h2 class="section-title" style="text-align: left;">Envíanos un Mensaje</h2>
+                    <p class="section-subtitle" style="text-align: left; margin-bottom: 32px;">
+                        ¿Tienes preguntas sobre tratamientos, costos o cirugías? Escríbenos y un asesor médico te responderá.
+                    </p>
+
+                    <form id="contactForm" class="contact-custom-form" onsubmit="handleContactForm(event)">
+                        <div class="form-group">
+                            <label for="contactName">Nombre completo *</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Correo electrónico *</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPhone">Teléfono / WhatsApp *</label>
+                            <input type="tel" id="contactPhone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Mensaje o Consulta *</label>
+                            <textarea id="contactMessage" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary full-btn">
+                            ✉️ Enviar Mensaje
+                        </button>
+                        <p class="form-note">
+                            * Respondemos habitualmente en menos de 2 horas en horario laboral.
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Mapa -->
+                <div>
+                    <span class="section-tag">CÓMO LLEGAR</span>
+                    <h2 class="section-title" style="text-align: left;">Nuestra Ubicación</h2>
+                    <p class="section-subtitle" style="text-align: left; margin-bottom: 24px;">
+                        Fácil acceso desde cualquier punto de la ciudad
+                    </p>
+                    <div class="map-wrapper">
+    <!-- Contenedor del mapa interactivo -->
+    <div id="mapaCanopolis" style="width: 100%; height: 480px; border-radius: 16px;"></div>
+    
+    <!-- Botón para obtener ubicación del usuario -->
+    <div style="padding: 16px; background: #fff; border-top: 1px solid var(--clr-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <p style="margin: 0; font-weight: 700; color: var(--clr-secondary);">📍 Canopolis Hospital Veterinario</p>
+            <p style="margin: 4px 0 0; font-size: 0.88rem; color: var(--clr-gray);">Av. Principal de las Mascotas #102, Barranquilla</p>
+        </div>
+        <button onclick="obtenerUbicacionUsuario()" style="background: var(--clr-primary); color: #fff; border: none; padding: 12px 24px; border-radius: 9999px; font-weight: 700; cursor: pointer; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(13, 118, 110, 0.3); transition: all 0.25s;">
+            📍 Mostrar mi ubicación y ruta
+        </button>
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="footer-logo">🐾 Canopolis</div>
+                    <p>
+                        La clínica y hospital veterinario donde tu mascota es tratada con el amor 
+                        incondicional, la ética y el rigor científico que merece.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💬</a>
+                        <a href="#" class="social-link">▶️</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h5>Navegación</h5>
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="nosotros.html">Nosotros</a></li>
+                        <li><a href="servicios.html">Servicios</a></li>
+                        <li><a href="contacto.html">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Contacto</h5>
+                    <ul>
+                        <li>📞 +57 (601) 800-CANOPOLIS</li>
+                        <li>✉️ citas@canopolis.com</li>
+                        <li> Av. Principal de las Mascotas #102</li>
+                        <li>🕐 Lun–Sáb: 7am – 8pm · Urgencias 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Canopolis · Clínica & Hospital Veterinario. Todos los derechos reservados.</p>
+                <p>Desarrollado con arquitectura Spring Boot 3 y MySQL.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay" onclick="closeModalOutside(event, 'loginModal')">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <div class="modal-logo">🐾 Canopolis</div>
+            <h3>Iniciar Sesión</h3>
+            <p>Accede al portal médico, historial clínico y gestión MySQL</p>
+            <div class="modal-tabs">
+                <button id="modalTabLogin" class="modal-tab-btn active" onclick="switchModalTab('login')">Iniciar Sesión</button>
+                <button id="modalTabRegister" class="modal-tab-btn" onclick="switchModalTab('register')">Crear Cuenta</button>
+            </div>
+            <button class="demo-fill-btn" onclick="fillDemoCredentials()">⚡ Autocompletar con credenciales demo</button>
+            <div id="loginForm" class="tab-content active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Correo electrónico *</label>
+                        <input type="email" id="loginEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña *</label>
+                        <div class="pwd-input-wrap">
+                            <input type="password" id="loginPassword" name="password" required>
+                            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <div id="authFeedback" class="form-feedback" style="display: none;"></div>
+                    <button type="submit" id="loginSubmitBtn" class="btn-primary full-btn">
+                        Ingresar al Sistema
+                    </button>
+                </form>
+                <p class="modal-footer-text">
+                    ¿No tienes cuenta? <a href="javascript:void(0)" onclick="switchModalTab('register')">Regístrate gratis</a>
+                </p>
+            </div>
+            <div id="registerForm" class="tab-content" style="display: none;">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="regName">Nombre completo *</label>
+                        <input type="text" id="regName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Correo electrónico *</label>
+                        <input type="email" id="regEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Contraseña *</label>
+                        <div class="pwd-input-wrap">
+                            <input type="password" id="regPassword" name="password" required>
+                            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" id="registerSubmitBtn" class="btn-primary full-btn">
+                        Crear Cuenta y Entrar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <!-- Modal Mis Citas -->
+    <div id="misCitasModal" class="modal-overlay" onclick="closeModalOutside(event, 'misCitasModal')">
+       <div class="modal" style="max-width: 680px;">
+          <button class="modal-close" onclick="closeModal('misCitasModal')">&times;</button>
+          <div class="modal-logo"> Mis Citas Médicas</div>
+             <p>Historial y citas programadas en Canopolis</p>
+             <div id="misCitasContenido" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+             <p style="text-align: center; color: var(--clr-gray);">Cargando tus citas...</p>
+           </div>
+       </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <!-- Leaflet CSS y JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Coordenadas de Canopolis en Barranquilla (ajusta si es necesario)
+const LAT_CANOPOLIS = 10.9639;
+const LNG_CANOPOLIS = -74.7964;
+
+let mapa;
+let marcadorEstablecimiento;
+let marcadorUsuario;
+let lineaRuta;
+
+// Inicializar mapa cuando la página cargue
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarMapa();
+});
+
+function inicializarMapa() {
+    // Crear mapa centrado en Canopolis
+    mapa = L.map('mapaCanopolis').setView([LAT_CANOPOLIS, LNG_CANOPOLIS], 15);
+    
+    // Agregar capa de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(mapa);
+    
+    // Icono personalizado para el establecimiento (hospital)
+    const iconoEstablecimiento = L.divIcon({
+        className: 'icono-establecimiento',
+        html: '<div style="background: #0d766e; width: 44px; height: 44px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 22px;">🏥</div>',
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+    });
+    
+    // Agregar marcador del establecimiento
+    marcadorEstablecimiento = L.marker([LAT_CANOPOLIS, LNG_CANOPOLIS], {
+        icon: iconoEstablecimiento
+    }).addTo(mapa);
+    
+    marcadorEstablecimiento.bindPopup(`
+        <div style="text-align: center; font-family: 'Nunito', sans-serif;">
+            <strong style="color: #0f2b48; font-size: 1rem;">Canopolis Hospital Veterinario</strong><br>
+            <span style="color: #475569; font-size: 0.88rem;">Av. Principal de las Mascotas #102</span><br>
+            <span style="color: #475569; font-size: 0.88rem;">Barranquilla, Colombia</span><br>
+            <span style="color: #0d766e; font-weight: 700; font-size: 0.82rem;">📞 +57 (601) 800-CANOPOLIS</span>
+        </div>
+    `).openPopup();
+}
+
+// Función para obtener ubicación del usuario y trazar ruta
+function obtenerUbicacionUsuario() {
+    if (!navigator.geolocation) {
+        alert('Tu navegador no soporta geolocalización. Por favor usa Chrome, Firefox o Edge.');
+        return;
+    }
+    
+    // Cambiar texto del botón mientras carga
+    const btn = event.target;
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = '⏳ Obteniendo ubicación...';
+    btn.disabled = true;
+    
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const latUsuario = position.coords.latitude;
+            const lngUsuario = position.coords.longitude;
+            
+            // Icono para el usuario
+            const iconoUsuario = L.divIcon({
+                className: 'icono-usuario',
+                html: '<div style="background: #3b82f6; width: 38px; height: 38px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px;"></div>',
+                iconSize: [38, 38],
+                iconAnchor: [19, 19]
+            });
+            
+            // Eliminar marcador y línea anteriores si existen
+            if (marcadorUsuario) {
+                mapa.removeLayer(marcadorUsuario);
+            }
+            if (lineaRuta) {
+                mapa.removeLayer(lineaRuta);
+            }
+            
+            // Agregar marcador del usuario
+            marcadorUsuario = L.marker([latUsuario, lngUsuario], {
+                icon: iconoUsuario
+            }).addTo(mapa);
+            
+            marcadorUsuario.bindPopup('<strong> Tu ubicación actual</strong>').openPopup();
+            
+            // Dibujar línea punteada entre usuario y establecimiento
+            lineaRuta = L.polyline([
+                [latUsuario, lngUsuario],
+                [LAT_CANOPOLIS, LNG_CANOPOLIS]
+            ], {
+                color: '#0d766e',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 10'
+            }).addTo(mapa);
+            
+            // Ajustar vista para mostrar ambos puntos
+            const bounds = L.latLngBounds([
+                [latUsuario, lngUsuario],
+                [LAT_CANOPOLIS, LNG_CANOPOLIS]
+            ]);
+            mapa.fitBounds(bounds, { padding: [60, 60] });
+            
+            // Calcular distancia
+            const distancia = calcularDistancia(latUsuario, lngUsuario, LAT_CANOPOLIS, LNG_CANOPOLIS);
+            
+            // Restaurar botón y mostrar alerta
+            btn.innerHTML = textoOriginal;
+            btn.disabled = false;
+            
+            alert(`📍 ¡Tu ubicación ha sido marcada!\n\n🏥 Distancia a Canopolis: ${distancia.toFixed(2)} km\n\nSigue la línea punteada verde para llegar.`);
+        },
+        (error) => {
+            let mensaje = 'Error al obtener ubicación:\n\n';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    mensaje += "Permiso denegado. Por favor activa la geolocalización en tu navegador y vuelve a intentarlo.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    mensaje += "Información de ubicación no disponible.";
+                    break;
+                case error.TIMEOUT:
+                    mensaje += "Tiempo de espera agotado. Intenta de nuevo.";
+                    break;
+                default:
+                    mensaje += "Error desconocido.";
+            }
+            alert(mensaje);
+            btn.innerHTML = textoOriginal;
+            btn.disabled = false;
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Calcular distancia entre dos puntos (fórmula de Haversine)
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radio de la Tierra en km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+</script>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
