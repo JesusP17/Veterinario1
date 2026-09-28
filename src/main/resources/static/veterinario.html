@@ -571,45 +571,43 @@
                 </div>
             </section>
 
-            <!-- GRID PRINCIPAL: CITAS (IZQUIERDA) + BARRA LATERAL DERECHA -->
-            <div class="dashboard-grid">
-                
-                <!-- COLUMNA IZQUIERDA: PRÓXIMAS CITAS -->
-                <section class="appointments-section">
-                    <div class="section-header-flex">
-                        <h2>📅 Próximas citas</h2>
-                        <a href="#" class="link-view-all">Ver todas →</a>
-                    </div>
-                    <div class="appointments-list" id="listaCitasVeterinario">
-                        <p class="loading-text">Cargando citas asignadas...</p>
-                    </div>
-                </section>
+           <!-- SECCIÓN DE CITAS (ANCHO COMPLETO) -->
+<section class="appointments-section full-width">
+    <div class="section-header-flex">
+        <h2>📅 Próximas citas</h2>
+        <a href="#" class="link-view-all">Ver todas →</a>
+    </div>
+    <div class="appointments-list" id="listaCitasVeterinario">
+        <p class="loading-text">Cargando citas asignadas...</p>
+    </div>
+</section>
 
-                <!-- COLUMNA DERECHA: SOLO PACIENTES -->
-                <aside class="right-sidebar">
-                    
-                    <!-- Pacientes en seguimiento (Resumen) -->
-                    <div class="sidebar-card">
-                        <div class="card-header-flex">
-                            <h3>🩺 Pacientes en seguimiento</h3>
-                            <a href="#" class="link-view-all">Ver todas</a>
-                        </div>
-                        <div class="metric-large" id="metricSeguimientoLarge">0</div>
-                    </div>
-
-                    <!-- Pacientes Recientes -->
-                    <div class="sidebar-card">
-                        <div class="card-header-flex">
-                            <h3>🐾 Pacientes recientes</h3>
-                            <a href="#" class="link-view-all">Ver todos</a>
-                        </div>
-                        <div class="patients-list" id="listaPacientesRecientes">
-                            <!-- JavaScript inyectará la lista aquí -->
-                        </div>
-                    </div>
-
-                </aside>
+<!-- PANEL DE PACIENTES (DEBAJO DE LAS CITAS) -->
+<section class="patients-panel">
+    <div class="patients-grid">
+        
+        <!-- Tarjeta: Pacientes en seguimiento -->
+        <div class="patient-card">
+            <div class="card-header-flex">
+                <h3>🩺 Pacientes en seguimiento</h3>
+                <a href="#" class="link-view-all">Ver todas</a>
             </div>
+            <div class="metric-large" id="metricSeguimientoLarge">0</div>
+        </div>
+
+        <!-- Tarjeta: Pacientes recientes -->
+        <div class="patient-card wide-card">
+            <div class="card-header-flex">
+                <h3>🐾 Pacientes recientes</h3>
+                <a href="#" class="link-view-all">Ver todos</a>
+            </div>
+            <div class="patients-list" id="listaPacientesRecientes">
+                <!-- JavaScript inyectará la lista aquí -->
+            </div>
+        </div>
+
+    </div>
+</section>
         </main>
     </div>
 
