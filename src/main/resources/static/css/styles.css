@@ -4014,3 +4014,107 @@ CORRECCIONES PANEL VETERINARIO - MÓVIL Y NAVBAR
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   CORRECCIÓN FINAL: PANEL VETERINARIO A PANTALLA COMPLETA
+   ========================================================================== */
+
+/* Forzar que el body ocupe todo el ancho */
+body.dashboard-body {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+}
+
+/* Sidebar fijo a la izquierda */
+body.dashboard-body .sidebar {
+    width: 260px !important;
+    min-width: 260px !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+}
+
+/* Contenido principal: OCUPA TODO EL ESPACIO RESTANTE */
+body.dashboard-body .main-content {
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+    min-width: calc(100% - 260px) !important;
+    padding: 24px !important;
+    flex: 1 !important;
+}
+
+/* Topbar ocupa todo el ancho */
+body.dashboard-body .topbar-dashboard {
+    width: 100% !important;
+    margin-bottom: 24px !important;
+}
+
+/* Banner de bienvenida ocupa todo el ancho */
+body.dashboard-body .welcome-banner {
+    width: 100% !important;
+    margin-bottom: 24px !important;
+}
+
+/* MÉTRICAS: 4 COLUMNAS EN PANTALLA COMPLETA */
+body.dashboard-body .metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+    margin-bottom: 24px !important;
+    width: 100% !important;
+}
+
+/* Cada tarjeta de métrica */
+body.dashboard-body .metric-card {
+    width: 100% !important;
+}
+
+/* GRID PRINCIPAL: UNA SOLA COLUMNA (CITAS OCUPAN TODO) */
+body.dashboard-body .dashboard-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    width: 100% !important;
+}
+
+/* Sección de citas ocupa todo el ancho */
+body.dashboard-body .appointments-section {
+    width: 100% !important;
+    grid-column: 1 / -1 !important;
+}
+
+/* Panel derecho de pacientes (si existe) también ocupa todo */
+body.dashboard-body .right-sidebar {
+    width: 100% !important;
+    grid-column: 1 / -1 !important;
+}
+
+/* Responsive: En tablets, 2 columnas para métricas */
+@media (max-width: 1200px) {
+    body.dashboard-body .metrics-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Responsive: En móviles, 1 columna para métricas */
+@media (max-width: 768px) {
+    body.dashboard-body .sidebar {
+        transform: translateX(-100%) !important;
+    }
+    
+    body.dashboard-body .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    body.dashboard-body .metrics-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
