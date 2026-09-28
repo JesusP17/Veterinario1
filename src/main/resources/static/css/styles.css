@@ -4118,3 +4118,45 @@ body.dashboard-body .right-sidebar {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* ==========================================================================
+   CORRECCIÓN FINAL: OCUPAR TODA LA PANTALLA
+   ========================================================================== */
+
+/* Forzar que el main-content use todo el ancho disponible */
+.dashboard-body .main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    padding: 24px 32px !important;
+}
+
+/* Asegurar que el dashboard-grid ocupe todo el ancho */
+.dashboard-body .dashboard-grid {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Las citas deben ocupar todo el ancho */
+.dashboard-body .appointments-section {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Las métricas también */
+.dashboard-body .metrics-grid {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* El banner de bienvenida */
+.dashboard-body .welcome-banner {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* La topbar */
+.dashboard-body .topbar-dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+}
