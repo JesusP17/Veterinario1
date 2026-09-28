@@ -1544,7 +1544,7 @@ button, input, select, textarea {
 
 .footer-inner {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 48px;
   padding: 80px 24px 48px;
   max-width: 1200px;
