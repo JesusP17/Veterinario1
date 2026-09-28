@@ -3879,15 +3879,25 @@ CORRECCIONES PANEL VETERINARIO - MÓVIL Y NAVBAR
   text-transform: uppercase;
 }
 
-/* 7. Grid Principal: Citas (Izquierda) + Sidebar Derecho */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  align-items: start;
+/* SECCIÓN DE CITAS A ANCHO COMPLETO */
+.appointments-section.full-width {
+  width: 100%;
+  margin-bottom: 24px;
 }
 
-.appointments-section, .right-sidebar {
+/* PANEL DE PACIENTES (NUEVO CONTENEDOR) */
+.patients-panel {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.patients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.patient-card {
   background: #ffffff;
   border-radius: 12px;
   padding: 24px;
@@ -3895,6 +3905,15 @@ CORRECCIONES PANEL VETERINARIO - MÓVIL Y NAVBAR
   border: 1px solid var(--clr-border);
 }
 
+.patient-card.wide-card {
+  grid-column: span 2; /* Ocupa 2 columnas en pantallas grandes */
+}
+
+@media (max-width: 768px) {
+  .patient-card.wide-card {
+    grid-column: span 1; /* En móvil, ocupa 1 columna */
+  }
+}
 .section-header-flex {
   display: flex;
   justify-content: space-between;
