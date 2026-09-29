@@ -50,23 +50,5 @@ public class TestConexionController {
             return ResponseEntity.internalServerError().body(respuesta);
         }
     }
-
-    /**
-     * Obtener todos los usuarios de la base de datos.
-     * URL: http://localhost:8080/api/usuarios
-     */
-    @GetMapping("/usuarios")
-    public List<Usuario> listarUsuarios() {
-        return usuarioRepository.findAll();
-    }
-
-    /**
-     * Crear un nuevo usuario en la base de datos.
-     * URL: http://localhost:8080/api/usuarios
-     */
-    @PostMapping("/usuarios")
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
-        Usuario nuevoUsuario = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(nuevoUsuario);
-    }
 }
+

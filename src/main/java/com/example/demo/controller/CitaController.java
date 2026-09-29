@@ -226,16 +226,48 @@ public class CitaController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
 
-            // 5. Asignar estado PENDIENTE por defecto
-            if (cita.getEstado() == null || cita.getEstado().trim().isEmpty()) {
-                cita.setEstado("PENDIENTE");
+            // 5. Auto-asignar veterinario según especialidad / cargo del servicio
+            if (cita.getVeterinario() == null) {
+                List<Usuario> veterinarios = usuarioRepository.findByRolIgnoreCase("VETERINARIO");
+                String servicioNombre = (cita.getServicio() != null ? cita.getServicio() : "").toLowerCase();
+                
+                Usuario vetEncontrado = null;
+                for (Usuario v : veterinarios) {
+                    if (v.getEspecialidad() != null && !v.getEspecialidad().trim().isEmpty()) {
+                        String esp = v.getEspecialidad().toLowerCase();
+                        if (servicioNombre.contains(esp) || esp.contains(servicioNombre) 
+                            || (servicioNombre.contains("consulta") && esp.contains("general"))
+                            || (servicioNombre.contains("cirug") && esp.contains("cirug"))
+                            || (servicioNombre.contains("vacun") && esp.contains("vacun"))
+                            || (servicioNombre.contains("imag") || servicioNombre.contains("diag") && esp.contains("diag"))) {
+                            vetEncontrado = v;
+                            break;
+                        }
+                    }
+                }
+                
+                // Fallback: si no hay coincidencia exacta de cargo, asignar al primer veterinario registrado
+                if (vetEncontrado == null && !veterinarios.isEmpty()) {
+                    vetEncontrado = veterinarios.get(0);
+                }
+                
+                if (vetEncontrado != null) {
+                    cita.setVeterinario(vetEncontrado);
+                }
             }
 
-            // 6. Guardar la cita
+            // 6. Asignar estado CONFIRMADA si tiene veterinario, o PENDIENTE
+            if (cita.getEstado() == null || cita.getEstado().trim().isEmpty()) {
+                cita.setEstado(cita.getVeterinario() != null ? "CONFIRMADA" : "PENDIENTE");
+            }
+
+            // 7. Guardar la cita
             Cita citaGuardada = citaRepository.save(cita);
 
             response.put("exito", true);
-            response.put("mensaje", "Cita solicitada exitosamente. Estado: PENDIENTE.");
+            response.put("mensaje", cita.getVeterinario() != null ? 
+                "Cita agendada y asignada automáticamente al " + cita.getVeterinario().getNombre() + " (" + (cita.getVeterinario().getEspecialidad() != null ? cita.getVeterinario().getEspecialidad() : "Veterinario") + ")." : 
+                "Cita solicitada exitosamente. Estado: PENDIENTE.");
             response.put("cita", citaGuardada);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

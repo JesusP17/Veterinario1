@@ -38,6 +38,9 @@ public class Usuario {
     @Column(length = 200)
     private String direccion;
     
+    @Column(length = 100)
+    private String especialidad;
+    
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
     
@@ -129,5 +132,13 @@ public class Usuario {
     
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getEspecialidad() {
+        return especialidad;
+    }
+
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
     }
 }

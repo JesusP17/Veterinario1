@@ -58,8 +58,27 @@ public class DataInitializer {
             Usuario vet = usuarioRepository.findByEmail("dr.garcia@canopolis.com").orElse(null);
             if (vet == null) {
                 vet = new Usuario("Dr. David García", "dr.garcia@canopolis.com", "vet123", "VETERINARIO", "3109876543", "Consultorio 1 - Canopolis");
+                vet.setEspecialidad("Consulta General");
                 vet = usuarioRepository.save(vet);
-                System.out.println(">> [DataInitializer] Usuario Veterinario creado: dr.garcia@canopolis.com / vet123");
+                System.out.println(">> [DataInitializer] Usuario Veterinario creado: dr.garcia@canopolis.com / vet123 (Consulta General)");
+            }
+
+            if (usuarioRepository.findByEmail("dra.lopez@canopolis.com").isEmpty()) {
+                Usuario vetCirujana = new Usuario("Dra. María Elena López", "dra.lopez@canopolis.com", "vet123", "VETERINARIO", "3112223344", "SDR-Quirófano 2");
+                vetCirujana.setEspecialidad("Cirugía Especializada");
+                usuarioRepository.save(vetCirujana);
+            }
+
+            if (usuarioRepository.findByEmail("dr.ruiz@canopolis.com").isEmpty()) {
+                Usuario vetVacunas = new Usuario("Dr. Carlos Andrés Ruiz", "dr.ruiz@canopolis.com", "vet123", "VETERINARIO", "3124445566", "Consultorio 3 - Vacunación");
+                vetVacunas.setEspecialidad("Vacunación y Desparasitación");
+                usuarioRepository.save(vetVacunas);
+            }
+
+            if (usuarioRepository.findByEmail("dra.ramirez@canopolis.com").isEmpty()) {
+                Usuario vetDiag = new Usuario("Dra. Sofía Ramírez", "dra.ramirez@canopolis.com", "vet123", "VETERINARIO", "3136667788", "Centro de Diagnóstico");
+                vetDiag.setEspecialidad("Diagnóstico por Imagen");
+                usuarioRepository.save(vetDiag);
             }
 
             Usuario cliente = usuarioRepository.findByEmail("cliente@canopolis.com").orElse(null);
@@ -93,13 +112,18 @@ public class DataInitializer {
                 consultaRepository.save(consultaAnterior);
                 System.out.println(">> [DataInitializer] Historia clínica y consulta médica previa inicializadas para Toby.");
 
-                // Cita asignada de prueba para el Dr. David García
+                // Citas asignadas de prueba según especialidad
                 if (citaRepository.count() == 0) {
-                    Cita cita = new Cita(toby, "Consulta General", LocalDate.now().plusDays(1), LocalTime.of(10, 0), "Control médico de rutina y chequeo dermatológico");
-                    cita.setVeterinario(vet);
-                    cita.setEstado("CONFIRMADA");
-                    citaRepository.save(cita);
-                    System.out.println(">> [DataInitializer] Cita médica de demostración asignada al Dr. David García para mañana a las 10:00 AM.");
+                    Cita cita1 = new Cita(toby, "Consulta General", LocalDate.now().plusDays(1), LocalTime.of(10, 0), "Control médico de rutina");
+                    cita1.setVeterinario(vet);
+                    cita1.setEstado("CONFIRMADA");
+                    citaRepository.save(cita1);
+
+                    Usuario vetCirugia = usuarioRepository.findByEmail("dra.lopez@canopolis.com").orElse(vet);
+                    Cita cita2 = new Cita(toby, "Cirugía Especializada", LocalDate.now().plusDays(2), LocalTime.of(14, 30), "Profilaxis dental y revisión quirúrgica");
+                    cita2.setVeterinario(vetCirugia);
+                    cita2.setEstado("CONFIRMADA");
+                    citaRepository.save(cita2);
                 }
             }
 

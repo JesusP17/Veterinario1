@@ -947,6 +947,34 @@ async function submitForm(event) {
     // Fallback local garantizado si backend no está activo o falló
     if (!citaExitosa) {
         const localCitas = JSON.parse(localStorage.getItem('canopolis_citas') || '[]');
+        
+        // Auto-asignación de veterinario según servicio/cargo seleccionado
+        let vetAsignado = null;
+        const localUsuarios = JSON.parse(localStorage.getItem('canopolis_usuarios') || '[]');
+        const veterinarios = localUsuarios.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+        
+        const sLower = (service || '').toLowerCase();
+        if (veterinarios.length > 0) {
+            vetAsignado = veterinarios.find(v => {
+                const esp = (v.especialidad || '').toLowerCase();
+                return esp && (sLower.includes(esp) || esp.includes(sLower) || 
+                       (sLower.includes('consulta') && esp.includes('general')) ||
+                       (sLower.includes('cirug') && esp.includes('cirug')) ||
+                       (sLower.includes('vacun') && esp.includes('vacun')));
+            }) || veterinarios[0];
+        } else {
+            // Veterinarios predeterminados por cargo
+            if (sLower.includes('cirug')) {
+                vetAsignado = { id: 102, nombre: 'Dra. María Elena López', especialidad: 'Cirugía Especializada' };
+            } else if (sLower.includes('vacun') || sLower.includes('desparasit')) {
+                vetAsignado = { id: 103, nombre: 'Dr. Carlos Andrés Ruiz', especialidad: 'Vacunación y Desparasitación' };
+            } else if (sLower.includes('diag') || sLower.includes('imag')) {
+                vetAsignado = { id: 104, nombre: 'Dra. Sofía Ramírez', especialidad: 'Diagnóstico por Imagen' };
+            } else {
+                vetAsignado = { id: 101, nombre: 'Dr. David García', especialidad: 'Consulta General' };
+            }
+        }
+
         const nuevaCita = {
             id: Date.now(),
             mascota: {
@@ -959,7 +987,8 @@ async function submitForm(event) {
             fecha: date,
             hora: time,
             motivo: reason || 'Consulta médica',
-            estado: 'PENDIENTE',
+            veterinario: vetAsignado,
+            estado: 'CONFIRMADA',
             fechaRegistro: new Date().toISOString()
         };
         localCitas.push(nuevaCita);
