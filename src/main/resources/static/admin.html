@@ -553,26 +553,26 @@
         ========================== -->
 
         <section class="charts" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; margin-bottom: 15px;">
-            <!-- CARD 1: Días Pico de Recaudación y Asistencia -->
+            <!-- CARD 1: Citas Pendientes y Estado de Citas -->
             <div class="panel" style="background: white; border-radius: 14px; padding: 22px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                 <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 style="font-size: 1.05rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;">
-                        📈 Días Pico de Recaudación y Asistencia
+                        📋 Estado de Citas (Citas Pendientes)
                     </h3>
-                    <span style="background: #ecfdf5; color: #059669; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid #a7f3d0;">EN VIVO</span>
+                    <span style="background: #fffbebf7; color: #d97706; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid #fcd34d;">MONITOREO</span>
                 </div>
                 <div style="position: relative; height: 260px; width: 100%;">
                     <canvas id="chartDiasPico"></canvas>
                 </div>
             </div>
 
-            <!-- CARD 2: Ventas por Tipo de Membresía / Servicio -->
+            <!-- CARD 2: Citas por Servicio Veterinario -->
             <div class="panel" style="background: white; border-radius: 14px; padding: 22px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                 <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 style="font-size: 1.05rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;">
-                        📊 Ventas por Tipo de Membresía
+                        🩺 Citas por Servicio Veterinario
                     </h3>
-                    <span style="background: #e0f2fe; color: #0284c7; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid #bae6fd;">DISTRIBUCIÓN</span>
+                    <span style="background: #e0f2fe; color: #0284c7; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid #bae6fd;">SERVICIOS</span>
                 </div>
                 <div style="position: relative; height: 260px; width: 100%;">
                     <canvas id="chartVentasMembresia"></canvas>
@@ -583,7 +583,7 @@
         <!-- SUB-FOOTER DE ANALÍTICA DEL DASHBOARD -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; background: white; padding: 16px 22px; border-radius: 12px; border: 1px solid #e2e8f0;">
             <h4 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                🔥 Análisis de Ingresos y Afluencia por Día de la Semana
+                📊 Control y Monitoreo Analítico de Citas Veterinarias
             </h4>
             <button onclick="actualizarAnaliticaGraficos()" style="background: #475569; color: white; border: none; padding: 9px 18px; border-radius: 8px; font-size: 0.88rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s;">
                 🔄 Actualizar Analítica
@@ -1219,66 +1219,43 @@
 
     function renderizarGraficos(citas, veterinarios) {
         // ========================================================
-        // CHART 1: Días Pico de Recaudación y Asistencia (EN VIVO)
+        // CHART 1: Estado de Citas (Enfoque en Citas Pendientes)
         // ========================================================
         const canvasPico = document.getElementById('chartDiasPico');
         if (canvasPico) {
             if (chartDiasPicoInstance) chartDiasPicoInstance.destroy();
 
-            const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-            const recaudacionPorDia = [450000, 680000, 520000, 790000, 950000, 1200000, 850000];
-            const asistentesPorDia = [8, 12, 10, 15, 18, 22, 16];
+            let totalPendientes = 0;
+            let totalConfirmadas = 0;
+            let totalAtendidas = 0;
+            let totalCanceladas = 0;
 
             if (citas && citas.length > 0) {
-                const mapRecaudacion = [0, 0, 0, 0, 0, 0, 0];
-                const mapAsistencia = [0, 0, 0, 0, 0, 0, 0];
-
                 citas.forEach(cita => {
-                    if (cita.fecha && String(cita.estado || '').toUpperCase() !== 'CANCELADA') {
-                        const dateObj = new Date(cita.fecha + 'T00:00:00');
-                        let dayIdx = dateObj.getDay() - 1;
-                        if (dayIdx < 0) dayIdx = 6;
-                        
-                        const precio = cita.servicioEntidad?.precio || 45000;
-                        mapRecaudacion[dayIdx] += precio;
-                        mapAsistencia[dayIdx] += 1;
-                    }
+                    const st = String(cita.estado || '').toUpperCase().trim();
+                    if (st === 'PENDIENTE') totalPendientes++;
+                    else if (st === 'CONFIRMADA' || st === 'PROGRAMADA') totalConfirmadas++;
+                    else if (st === 'ATENDIDA' || st === 'COMPLETADA' || st === 'REALIZADA') totalAtendidas++;
+                    else if (st === 'CANCELADA') totalCanceladas++;
+                    else totalPendientes++;
                 });
-
-                if (mapAsistencia.reduce((a, b) => a + b, 0) > 0) {
-                    for (let i = 0; i < 7; i++) {
-                        if (mapAsistencia[i] > 0) {
-                            recaudacionPorDia[i] = mapRecaudacion[i];
-                            asistentesPorDia[i] = mapAsistencia[i];
-                        }
-                    }
-                }
+            } else {
+                totalPendientes = 14;
+                totalConfirmadas = 22;
+                totalAtendidas = 35;
+                totalCanceladas = 6;
             }
 
             chartDiasPicoInstance = new Chart(canvasPico, {
-                type: 'bar',
+                type: 'doughnut',
                 data: {
-                    labels: diasSemana,
-                    datasets: [
-                        {
-                            label: 'Recaudación ($)',
-                            data: recaudacionPorDia,
-                            backgroundColor: '#2563eb',
-                            borderRadius: 4,
-                            barPercentage: 0.45,
-                            categoryPercentage: 0.7,
-                            yAxisID: 'yRecaudacion'
-                        },
-                        {
-                            label: 'Pacientes Asistentes',
-                            data: asistentesPorDia,
-                            backgroundColor: '#06b6d4',
-                            borderRadius: 4,
-                            barPercentage: 0.45,
-                            categoryPercentage: 0.7,
-                            yAxisID: 'yAsistentes'
-                        }
-                    ]
+                    labels: ['Pendientes', 'Confirmadas', 'Atendidas', 'Canceladas'],
+                    datasets: [{
+                        data: [totalPendientes, totalConfirmadas, totalAtendidas, totalCanceladas],
+                        backgroundColor: ['#f59e0b', '#2563eb', '#10b981', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
                 },
                 options: {
                     responsive: true,
@@ -1288,74 +1265,62 @@
                             position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                boxWidth: 14,
+                                boxWidth: 12,
                                 font: { size: 12, weight: 'bold' }
                             }
                         },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    if (context.dataset.label.includes('$')) {
-                                        return `${context.dataset.label}: $${context.raw.toLocaleString('es-CO')}`;
-                                    }
-                                    return `${context.dataset.label}: ${context.raw} pacientes`;
+                                    return ` ${context.label}: ${context.raw} citas`;
                                 }
                             }
                         }
                     },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { size: 12, weight: '600' } }
-                        },
-                        yRecaudacion: {
-                            type: 'linear',
-                            position: 'left',
-                            grid: { color: '#f1f5f9' },
-                            ticks: {
-                                callback: function(value) { return '$' + (value / 1000) + 'k'; }
-                            }
-                        },
-                        yAsistentes: {
-                            type: 'linear',
-                            position: 'right',
-                            grid: { display: false },
-                            ticks: {
-                                stepSize: 5
-                            }
-                        }
-                    }
+                    cutout: '65%'
                 }
             });
         }
 
         // ========================================================
-        // CHART 2: Ventas por Tipo de Membresía / Servicio (DISTRIBUCIÓN)
+        // CHART 2: Citas por Servicio Veterinario
         // ========================================================
         const canvasMembresia = document.getElementById('chartVentasMembresia');
         if (canvasMembresia) {
             if (chartVentasMembresiaInstance) chartVentasMembresiaInstance.destroy();
 
+            const conteoServicios = {};
+            if (citas && citas.length > 0) {
+                citas.forEach(cita => {
+                    const nombreServicio = cita.servicioEntidad?.nombre || cita.servicio || 'Consulta General';
+                    conteoServicios[nombreServicio] = (conteoServicios[nombreServicio] || 0) + 1;
+                });
+            }
+
+            let labelsServicios = Object.keys(conteoServicios);
+            let dataServicios = Object.values(conteoServicios);
+
+            if (labelsServicios.length === 0) {
+                labelsServicios = ['Consulta General', 'Vacunación', 'Cirugía Minor', 'Desparasitación', 'Peluquería / Estética'];
+                dataServicios = [28, 19, 8, 15, 12];
+            }
+
             chartVentasMembresiaInstance = new Chart(canvasMembresia, {
                 type: 'bar',
                 data: {
-                    labels: [
-                        'Mensual General ($100k)', 
-                        'Mensual VIP ($120k)', 
-                        'Trimestral ($300k)', 
-                        'Anual Black ($950k)'
-                    ],
+                    labels: labelsServicios,
                     datasets: [{
-                        label: 'Ventas por Membresía ($)',
-                        data: [100000, 120000, 300000, 950000],
+                        label: 'Número de Citas',
+                        data: dataServicios,
                         backgroundColor: [
                             '#2563eb',
                             '#06b6d4',
-                            '#15803d',
-                            '#ea580c'
+                            '#10b981',
+                            '#f59e0b',
+                            '#8b5cf6'
                         ],
                         borderRadius: 6,
-                        barThickness: 32
+                        barThickness: 24
                     }]
                 },
                 options: {
@@ -1367,7 +1332,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return ` Total Recaudado: $${context.raw.toLocaleString('es-CO')}`;
+                                    return ` Total: ${context.raw} citas agendadas`;
                                 }
                             }
                         }
@@ -1375,9 +1340,7 @@
                     scales: {
                         x: {
                             grid: { color: '#f1f5f9' },
-                            ticks: {
-                                callback: function(value) { return '$' + (value / 1000) + 'k'; }
-                            }
+                            ticks: { precision: 0, font: { size: 11 } }
                         },
                         y: {
                             grid: { display: false },
@@ -1393,7 +1356,7 @@
         cargarDashboard();
         const toast = document.createElement('div');
         toast.style.cssText = "position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2);";
-        toast.innerHTML = "🔄 Analítica de Ingresos y Afluencia actualizada en vivo.";
+        toast.innerHTML = "🔄 Analítica de Citas y Servicios actualizada en vivo.";
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2500);
     }
