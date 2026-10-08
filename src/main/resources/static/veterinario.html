@@ -962,15 +962,15 @@
         // Variable global para almacenar las mascotas y hacer búsqueda instantánea
 let todasLasMascotas = [];
 
-// Función para mostrar la sección de Historias Clínicas
+// Función para mostrar la sección de Historias Clínicas (Forzando ocultamiento de métricas)
 function mostrarSeccionHistorias(event) {
     if (event) event.preventDefault();
     
-    // Ocultar dashboard principal
-    document.querySelector('.welcome-banner').style.display = 'none';
-    document.querySelector('.metrics-grid').style.display = 'none';
-    document.querySelector('.appointments-section').style.display = 'none';
-    document.querySelector('.patients-panel').style.display = 'none';
+    // Forzar ocultamiento con !important para sobrescribir cualquier CSS externo
+    document.querySelector('.welcome-banner').style.setProperty('display', 'none', 'important');
+    document.querySelector('.metrics-grid').style.setProperty('display', 'none', 'important');
+    document.querySelector('.appointments-section').style.setProperty('display', 'none', 'important');
+    document.querySelector('.patients-panel').style.setProperty('display', 'none', 'important');
     
     // Mostrar sección de historias
     document.getElementById('seccionHistorias').style.display = 'block';
@@ -985,20 +985,23 @@ function mostrarSeccionHistorias(event) {
     }
 }
 
-// Función para volver al dashboard (Inicio)
-function volverAlDashboard() {
-    document.querySelector('.welcome-banner').style.display = 'block';
-    document.querySelector('.metrics-grid').style.display = 'block';
-    document.querySelector('.appointments-section').style.display = 'block';
-    document.querySelector('.patients-panel').style.display = 'block';
+// Función para volver al dashboard (Inicio / Citas / Pacientes)
+function volverAlDashboard(event) {
+    if (event) event.preventDefault();
     
+    // Forzar visualización con !important
+    document.querySelector('.welcome-banner').style.setProperty('display', 'block', 'important');
+    document.querySelector('.metrics-grid').style.setProperty('display', 'grid', 'important'); // Grid es importante aquí
+    document.querySelector('.appointments-section').style.setProperty('display', 'block', 'important');
+    document.querySelector('.patients-panel').style.setProperty('display', 'block', 'important');
+    
+    // Ocultar sección de historias
     document.getElementById('seccionHistorias').style.display = 'none';
     
+    // Actualizar sidebar activo (marcar "Inicio" como activo)
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    // Marca el primer elemento (Inicio) como activo
-    document.querySelector('.sidebar-nav .nav-item').classList.add('active');
+    document.getElementById('navInicio').classList.add('active');
 }
-
 // Cargar todas las mascotas desde el backend
 async function cargarTodasLasMascotas() {
     try {
