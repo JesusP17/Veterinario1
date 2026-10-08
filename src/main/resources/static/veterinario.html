@@ -757,6 +757,11 @@
             cargarCitasVeterinario();
             cargarEstadisticas();
             actualizarAvatarVeterinario();
+                // Activar búsqueda en tiempo real
+    const buscador = document.getElementById('buscadorHistorias');
+    if (buscador) {
+        buscador.addEventListener('input', (e) => filtrarMascotas(e.target.value));
+    }
         });
 
         // =======================================================
