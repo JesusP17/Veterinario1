@@ -498,6 +498,81 @@
     opacity: 0.95;
     margin-top: 5px;
 }
+
+        /* Ajustar el banner para que el avatar esté a la derecha */
+.welcome-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px !important;
+}
+
+.welcome-text {
+    flex: 1;
+    text-align: left;
+}
+
+.welcome-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-left: auto; /* Empuja el contenedor a la derecha */
+    padding-right: 20px;
+}
+
+/* Ajustar tamaño del avatar */
+.large-avatar {
+    width: 100px !important;
+    height: 100px !important;
+    font-size: 3rem !important;
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+    margin: 0 !important;
+}
+
+.user-role-below-avatar {
+    text-align: center;
+    font-weight: 600;
+    color: white;
+    font-size: 0.85rem;
+    opacity: 0.95;
+    margin-top: 8px;
+}
+
+
+        /* Centrar y agrandar la sección de Historias Clínicas */
+#seccionHistorias {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 400px;
+    padding: 20px;
+}
+
+#seccionHistorias .citas-card {
+    width: 100%;
+    max-width: 900px; /* Ancho máximo de 900px */
+    margin: 0 auto;
+}
+
+#seccionHistorias h2 {
+    margin-bottom: 24px;
+}
+
+#seccionHistorias .form-group {
+    margin-bottom: 24px;
+}
+
+#seccionHistorias .form-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+#resultadosHistorias {
+    min-height: 200px;
+}
         
     </style>
 </head>
