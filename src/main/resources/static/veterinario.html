@@ -958,19 +958,48 @@ body.seccion-historias-activa .main-content {
             }
         }
 
-        async function cargarEstadisticas() {
-            try {
-                const vetId = obtenerVetId();
-                const hoy = new Date().toISOString().split('T')[0];
-                const resHoy = await fetch(`/api/citas/veterinario/${vetId}`);
-                const citasHoy = await resHoy.json();
-                const citasHoyCount = citasHoy.filter(c => c.veterinario && Number(c.veterinario.id) === Number(vetId) && c.fecha === hoy).length;
-                document.getElementById('metricCitasHoy').textContent = citasHoyCount;
-            } catch (err) {
-                console.error('Error al cargar estadísticas:', err);
-            }
-        }
 
+        // Variable global para guardar las citas y usarlas en los modales
+let todasLasCitasCache = [];
+
+async function cargarEstadisticas() {
+    try {
+        const vetId = obtenerVetId();
+        const hoy = new Date().toISOString().split('T')[0];
+        
+        const res = await fetch(`/api/citas/veterinario/${vetId}`);
+        if (!res.ok) throw new Error('Error al cargar citas');
+        
+        const todasLasCitas = await res.json();
+        todasLasCitasCache = todasLasCitas; // Guardamos en caché para los modales
+        
+        // Filtrar citas asignadas al veterinario actual
+        const citasVet = todasLasCitas.filter(c => c.veterinario && Number(c.veterinario.id) === Number(vetId));
+
+        // 1. Citas hoy
+        const citasHoyCount = citasVet.filter(c => c.fecha === hoy).length;
+        document.getElementById('metricCitasHoy').textContent = citasHoyCount;
+
+        // 2. Pacientes activos (Citas pendientes o confirmadas a futuro)
+        const activosCount = citasVet.filter(c => 
+            (c.estado === 'PENDIENTE' || c.estado === 'CONFIRMADA') && c.fecha >= hoy
+        ).length;
+        document.getElementById('metricPacientesActivos').textContent = activosCount;
+
+        // 3. Atendidos hoy
+        const atendidosHoyCount = citasVet.filter(c => c.estado === 'ATENDIDA' && c.fecha === hoy).length;
+        document.getElementById('metricAtendidosHoy').textContent = atendidosHoyCount;
+
+        // 4. Historias clínicas recientes (Últimas 5 citas atendidas, sin importar la fecha)
+        const recientesCount = citasVet.filter(c => c.estado === 'ATENDIDA').length;
+        document.getElementById('metricHistoriasRecientes').textContent = Math.min(recientesCount, 5); // Mostramos un indicador
+
+    } catch (err) {
+        console.error('Error al cargar estadísticas:', err);
+    }
+}
+
+        
         async function atenderCita(citaId) {
             try {
                 const vetId = obtenerVetId();
