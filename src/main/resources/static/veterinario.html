@@ -1291,6 +1291,58 @@ function restaurarBusqueda() {
     filtrarMascotas(input.value);
 }
 
+        // Función para mostrar la lista de mascotas según la métrica clickeada
+function mostrarListaMetricas(tipo) {
+    const hoy = new Date().toISOString().split('T')[0];
+    const vetId = obtenerVetId();
+    let listaFiltrada = [];
+    let titulo = "";
+
+    const citasVet = todasLasCitasCache.filter(c => c.veterinario && Number(c.veterinario.id) === Number(vetId));
+
+    if (tipo === 'activos') {
+        titulo = " Pacientes Activos (Citas programadas)";
+        listaFiltrada = citasVet.filter(c => (c.estado === 'PENDIENTE' || c.estado === 'CONFIRMADA') && c.fecha >= hoy);
+    } else if (tipo === 'atendidos') {
+        titulo = " Atendidos Hoy";
+        listaFiltrada = citasVet.filter(c => c.estado === 'ATENDIDA' && c.fecha === hoy);
+    } else if (tipo === 'recientes') {
+        titulo = "📋 Historias Clínicas Recientes (Últimas atendidas)";
+        // Tomamos las últimas 5 atendidas
+        listaFiltrada = citasVet.filter(c => c.estado === 'ATENDIDA').slice(-5).reverse();
+    }
+
+    // Generar HTML de la lista
+    let html = `<h3 style="margin-bottom: 15px; color: var(--clr-primary);">${titulo}</h3>`;
+    
+    if (listaFiltrada.length === 0) {
+        html += '<p style="color: var(--clr-gray);">No hay registros para mostrar en esta categoría.</p>';
+    } else {
+        html += '<ul class="cita-list">';
+        listaFiltrada.forEach(cita => {
+            html += `
+                <li class="cita-item">
+                    <div class="cita-item-header">
+                        <span class="cita-mascota">${cita.mascota.nombre} (${cita.mascota.especie})</span>
+                        <span class="cita-estado estado-${cita.estado.toLowerCase()}">${cita.estado}</span>
+                    </div>
+                    <div class="cita-detalles">
+                        <strong>Fecha:</strong> ${cita.fecha} | <strong>Servicio:</strong> ${cita.servicio}<br>
+                        <strong>Propietario:</strong> ${cita.mascota.propietario ? cita.mascota.propietario.nombre : 'N/A'}
+                    </div>
+                </li>
+            `;
+        });
+        html += '</ul>';
+    }
+
+    // Mostrar en el modal
+    document.getElementById('modalListaMetricasTitulo').innerHTML = titulo;
+    document.getElementById('modalListaMetricasContenido').innerHTML = html;
+    document.getElementById('modalListaMetricas').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
         window.atenderCita = atenderCita;
         window.registrarNuevaConsulta = registrarNuevaConsulta;
         window.verHistoriaClinica = verHistoriaClinica;
