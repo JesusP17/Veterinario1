@@ -531,11 +531,16 @@ function completeLogin(user, token) {
     resetSubmitButton(loginSubmit, 'Ingresar al Sistema');
     resetSubmitButton(regSubmit, 'Crear Cuenta y Entrar');
     
-    const rol = String(user.rol || '').toUpperCase();
+        const rol = String(user.rol || '').toUpperCase();
     if (rol === 'ADMIN' || rol === 'ADMINISTRADOR') {
         sessionStorage.removeItem('bypass_admin_redirect');
         setTimeout(() => {
             window.location.href = 'admin.html';
+        }, 400);
+    } else if (rol === 'VETERINARIO') {
+        // Redirección automática al panel veterinario
+        setTimeout(() => {
+            window.location.href = 'veterinario.html';
         }, 400);
     }
 }
