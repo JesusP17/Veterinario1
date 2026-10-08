@@ -844,6 +844,20 @@ body.seccion-historias-activa .main-content {
         </div>
     </div>
 
+    <!-- Modal para ver listas de métricas -->
+<div id="modalListaMetricas" class="modal-overlay" onclick="closeModalOutside(event, 'modalListaMetricas')">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('modalListaMetricas')">&times;</button>
+        <div class="modal-logo" id="modalListaMetricasTitulo">Lista</div>
+        <div id="modalListaMetricasContenido" style="max-height: 60vh; overflow-y: auto;">
+            <!-- El contenido se inyectará aquí -->
+        </div>
+        <div class="form-actions" style="justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn-outline" onclick="closeModal('modalListaMetricas')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
     <!-- Scripts -->
     <script src="js/app.js"></script>
     <script>
@@ -1348,5 +1362,8 @@ function mostrarListaMetricas(tipo) {
         window.verHistoriaClinica = verHistoriaClinica;
         window.obtenerVetId = obtenerVetId;
     </script>
+
+    
+    
 </body>
 </html>
