@@ -1060,47 +1060,66 @@ let todasLasMascotas = [];
 function mostrarSeccionHistorias(event) {
     if (event) event.preventDefault();
     
-    // Agregar clase al body para activar estilos del contenedor padre
+    // 1. Agregar clase al body para activar los estilos CSS específicos
     document.body.classList.add('seccion-historias-activa');
     
-    // Forzar ocultamiento con !important
+    // 2. Ocultar las secciones del dashboard principal
     document.querySelector('.welcome-banner').style.setProperty('display', 'none', 'important');
     document.querySelector('.metrics-grid').style.setProperty('display', 'none', 'important');
     document.querySelector('.appointments-section').style.setProperty('display', 'none', 'important');
     document.querySelector('.patients-panel').style.setProperty('display', 'none', 'important');
     
-    // Mostrar sección de historias
+    // 3. Mostrar la sección de historias
     document.getElementById('seccionHistorias').style.display = 'flex';
     
-    // Actualizar sidebar activo
+    // 4. Actualizar sidebar activo
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.getElementById('navHistorias').classList.add('active');
     
-    // Cargar mascotas si no están cargadas aún
+    // 5. Cargar mascotas si no están cargadas aún
     if (todasLasMascotas.length === 0) {
         cargarTodasLasMascotas();
     }
 }
 
-// Función para volver al dashboard
+// Función para volver al dashboard (Inicio, Citas, Pacientes)
 function volverAlDashboard(event) {
     if (event) event.preventDefault();
     
-    // Remover clase del body
+    // 1. Remover la clase del body para desactivar los estilos de historia
     document.body.classList.remove('seccion-historias-activa');
     
-    // Forzar visualización con !important
+    // 2. Mostrar las secciones del dashboard principal
     document.querySelector('.welcome-banner').style.setProperty('display', 'block', 'important');
     document.querySelector('.metrics-grid').style.setProperty('display', 'grid', 'important');
     document.querySelector('.appointments-section').style.setProperty('display', 'block', 'important');
     document.querySelector('.patients-panel').style.setProperty('display', 'block', 'important');
     
-    // Ocultar sección de historias
+    // 3. Ocultar la sección de historias
     document.getElementById('seccionHistorias').style.display = 'none';
     
-    // Actualizar sidebar activo
+    // 4. Actualizar sidebar activo (marcar "Inicio" como activo)
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.getElementById('navInicio').classList.add('active');
+}
+
+// Función limpia del avatar (sin la parte del sidebar que decidimos quitar)
+function actualizarAvatarVeterinario() {
+    const user = state.currentUser;
+    if (user) {
+        const inicial = (user.nombre || 'V').charAt(0).toUpperCase();
+        const vetFirstName = user.nombre.split(' ')[0];
+        const userRole = user.rol || 'VETERINARIO';
+        
+        const avatarBanner = document.getElementById('vetBannerAvatar');
+        if (avatarBanner) avatarBanner.textContent = inicial;
+        
+        const vetFirstNameSpan = document.getElementById('vetFirstName');
+        if (vetFirstNameSpan) vetFirstNameSpan.textContent = vetFirstName;
+        
+        const roleBelowAvatar = document.getElementById('vetRoleBelowAvatar');
+        if (roleBelowAvatar) roleBelowAvatar.textContent = userRole;
+    }
 }
         
 // Cargar todas las mascotas desde el backend
