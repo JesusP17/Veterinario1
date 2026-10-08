@@ -662,36 +662,36 @@ body.seccion-historias-activa .main-content {
 </section>
 
             <!-- TARJETAS DE MÉTRICAS (DASHBOARD) -->
-            <section class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-icon bg-green">📅</div>
-                    <div class="metric-info">
-                        <span class="metric-value" id="metricCitasHoy">0</span>
-                        <span class="metric-label">Citas hoy</span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon bg-blue">🐾</div>
-                    <div class="metric-info">
-                        <span class="metric-value" id="metricPacientesActivos">0</span>
-                        <span class="metric-label">Pacientes activos</span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon bg-purple">📋</div>
-                    <div class="metric-info">
-                        <span class="metric-value" id="metricHistoriasRecientes">0</span>
-                        <span class="metric-label">Historias clínicas recientes</span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon bg-orange">🩺</div>
-                    <div class="metric-info">
-                        <span class="metric-value" id="metricSeguimiento">0</span>
-                        <span class="metric-label">Pacientes en seguimiento</span>
-                    </div>
-                </div>
-            </section>
+<section class="metrics-grid">
+    <div class="metric-card" style="cursor: default;">
+        <div class="metric-icon bg-green">📅</div>
+        <div class="metric-info">
+            <span class="metric-value" id="metricCitasHoy">0</span>
+            <span class="metric-label">Citas hoy</span>
+        </div>
+    </div>
+    <div class="metric-card" style="cursor: pointer;" onclick="mostrarListaMetricas('activos')">
+        <div class="metric-icon bg-blue">🐾</div>
+        <div class="metric-info">
+            <span class="metric-value" id="metricPacientesActivos">0</span>
+            <span class="metric-label">Pacientes activos</span>
+        </div>
+    </div>
+    <div class="metric-card" style="cursor: pointer;" onclick="mostrarListaMetricas('recientes')">
+        <div class="metric-icon bg-purple">📋</div>
+        <div class="metric-info">
+            <span class="metric-value" id="metricHistoriasRecientes">0</span>
+            <span class="metric-label">Historias clínicas recientes</span>
+        </div>
+    </div>
+    <div class="metric-card" style="cursor: pointer;" onclick="mostrarListaMetricas('atendidos')">
+        <div class="metric-icon bg-orange">🩺</div>
+        <div class="metric-info">
+            <span class="metric-value" id="metricAtendidosHoy">0</span>
+            <span class="metric-label">Atendidos hoy</span>
+        </div>
+    </div>
+</section>
 
            <!-- SECCIÓN DE CITAS (ANCHO COMPLETO) -->
 <section class="appointments-section full-width">
