@@ -675,8 +675,13 @@ function handleLogout() {
     localStorage.removeItem('canopolis_time');
     
     updateAuthUI();
-   
+    
     showToast('Sesión cerrada', 'Has cerrado tu sesión de forma segura.');
+    
+    // Redirigir automáticamente a la página principal
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1500); // Espera 1.5 segundos para que el usuario vea el mensaje
 }
 
 function checkPersistedSession() {
