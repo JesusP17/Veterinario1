@@ -1117,7 +1117,7 @@ function volverAlDashboard(event) {
     document.body.classList.remove('seccion-historias-activa');
     
     // 2. Mostrar las secciones del dashboard principal
-    document.querySelector('.welcome-banner').style.setProperty('display', 'block', 'important');
+    document.querySelector('.welcome-banner').style.setProperty('display', 'flex', 'important');
     document.querySelector('.metrics-grid').style.setProperty('display', 'grid', 'important');
     document.querySelector('.appointments-section').style.setProperty('display', 'block', 'important');
     document.querySelector('.patients-panel').style.setProperty('display', 'block', 'important');
@@ -1128,6 +1128,20 @@ function volverAlDashboard(event) {
     // 4. Actualizar sidebar activo (marcar "Inicio" como activo)
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.getElementById('navInicio').classList.add('active');
+    
+    // 5. RECARGAR los datos del dashboard
+    cargarCitasVeterinario();
+    cargarEstadisticas();
+    
+    // 6. Forzar el reajuste del layout del banner
+    setTimeout(() => {
+        const banner = document.querySelector('.welcome-banner');
+        if (banner) {
+            banner.style.display = 'flex';
+            banner.style.justifyContent = 'space-between';
+            banner.style.alignItems = 'center';
+        }
+    }, 100);
 }
 
 // Función limpia del avatar (sin la parte del sidebar que decidimos quitar)
