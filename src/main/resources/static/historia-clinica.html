@@ -685,5 +685,39 @@
             }
         }
     </script>
+
+        <script>
+    // Verificar si el usuario es veterinario para adaptar la vista
+    (function() {
+        const savedUser = localStorage.getItem('canopolis_user');
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                if (user && (user.rol === 'VETERINARIO' || user.rol === 'ADMIN' || user.rol === 'ADMINISTRADOR')) {
+                    
+                    // 1. Ocultar la barra de navegación pública y el footer (ajusta las clases si son diferentes en tu archivo)
+                    const navbar = document.querySelector('.navbar') || document.querySelector('header');
+                    if (navbar) navbar.style.display = 'none';
+                    
+                    const footer = document.querySelector('footer');
+                    if (footer) footer.style.display = 'none';
+
+                    // 2. Crear e insertar un botón para volver al panel veterinario
+                    const btnVolver = document.createElement('a');
+                    btnVolver.href = 'veterinario.html';
+                    btnVolver.textContent = '← Volver al Panel Veterinario';
+                    btnVolver.style.cssText = 'display: inline-block; background: #0f766e; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 20px;';
+                    
+                    // Insertar el botón al principio del main o del body
+                    const mainContent = document.querySelector('main') || document.body;
+                    mainContent.insertBefore(btnVolver, mainContent.firstChild);
+                }
+            } catch (e) {
+                console.error("Error al verificar usuario:", e);
+            }
+        }
+    })();
+</script>
+        
 </body>
 </html>
