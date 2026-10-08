@@ -540,26 +540,28 @@
     margin-top: 8px;
 }
 
-/* Cuando la sección de historias esté visible, hacer que el main ocupe todo el ancho */
-body.seccion-historias-activa .main-content {
+/* ==========================================
+   CORRECCIÓN DEFINITIVA: SECCIÓN HISTORIAS
+   ========================================== */
+
+/* Por defecto, la sección respeta el "display: none" del HTML */
+#seccionHistorias {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* SOLO cuando se activa, se muestra y se centra */
+body.seccion-historias-activa #seccionHistorias {
     display: flex !important;
     justify-content: center !important;
     align-items: flex-start !important;
-    padding: 40px 20px !important;
+    width: 100% !important;
 }
 
-/* Forzar que la sección ocupe todo el ancho disponible */
-#seccionHistorias {
+/* La tarjeta interna se hace grande SOLO cuando está activa */
+body.seccion-historias-activa #seccionHistorias .citas-card {
     width: 100% !important;
-    max-width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-}
-
-/* Forzar que la tarjeta sea mucho más ancha */
-#seccionHistorias .citas-card {
-    width: 100% !important;
-    max-width: 1200px !important; /* Aumentado a 1200px */
+    max-width: 1200px !important;
     margin: 0 auto !important;
     padding: 40px !important;
     min-height: 500px !important;
