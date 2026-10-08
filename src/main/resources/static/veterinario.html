@@ -1097,18 +1097,21 @@ async function cargarEstadisticas() {
         // Variable global para almacenar las mascotas y hacer búsqueda instantánea
 let todasLasMascotas = [];
 
-// Función para mostrar la sección de Historias Clínicas
+// Función para mostrar la sección de Historias Clínicas (CORREGIDA)
 function mostrarSeccionHistorias(event) {
     if (event) event.preventDefault();
     
     // 1. Agregar clase al body para activar los estilos CSS específicos
     document.body.classList.add('seccion-historias-activa');
     
-    // 2. Ocultar las secciones del dashboard principal
-    document.querySelector('.welcome-banner').style.setProperty('display', 'none', 'important');
-    document.querySelector('.metrics-grid').style.setProperty('display', 'none', 'important');
-    document.querySelector('.appointments-section').style.setProperty('display', 'none', 'important');
-    document.querySelector('.patients-panel').style.setProperty('display', 'none', 'important');
+    // 2. Ocultar las secciones del dashboard principal (sin patients-panel porque ya no existe)
+    const welcomeBanner = document.querySelector('.welcome-banner');
+    const metricsGrid = document.querySelector('.metrics-grid');
+    const appointmentsSection = document.querySelector('.appointments-section');
+    
+    if (welcomeBanner) welcomeBanner.style.setProperty('display', 'none', 'important');
+    if (metricsGrid) metricsGrid.style.setProperty('display', 'none', 'important');
+    if (appointmentsSection) appointmentsSection.style.setProperty('display', 'none', 'important');
     
     // 3. Mostrar la sección de historias
     document.getElementById('seccionHistorias').style.display = 'flex';
@@ -1123,18 +1126,21 @@ function mostrarSeccionHistorias(event) {
     }
 }
 
-// Función para volver al dashboard (Inicio, Citas, Pacientes)
+// Función para volver al dashboard (CORREGIDA)
 function volverAlDashboard(event) {
     if (event) event.preventDefault();
     
     // 1. Remover la clase del body para desactivar los estilos de historia
     document.body.classList.remove('seccion-historias-activa');
     
-    // 2. Mostrar las secciones del dashboard principal
-    document.querySelector('.welcome-banner').style.setProperty('display', 'flex', 'important');
-    document.querySelector('.metrics-grid').style.setProperty('display', 'grid', 'important');
-    document.querySelector('.appointments-section').style.setProperty('display', 'block', 'important');
-    document.querySelector('.patients-panel').style.setProperty('display', 'block', 'important');
+    // 2. Mostrar las secciones del dashboard principal (sin patients-panel)
+    const welcomeBanner = document.querySelector('.welcome-banner');
+    const metricsGrid = document.querySelector('.metrics-grid');
+    const appointmentsSection = document.querySelector('.appointments-section');
+    
+    if (welcomeBanner) welcomeBanner.style.setProperty('display', 'flex', 'important');
+    if (metricsGrid) metricsGrid.style.setProperty('display', 'grid', 'important');
+    if (appointmentsSection) appointmentsSection.style.setProperty('display', 'block', 'important');
     
     // 3. Ocultar la sección de historias
     document.getElementById('seccionHistorias').style.display = 'none';
