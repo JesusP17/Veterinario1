@@ -722,29 +722,30 @@
         // =======================================================
         // ACTUALIZAR AVATAR DEL VETERINARIO (Dinámico)
         // =======================================================
-        function actualizarAvatarVeterinario() {
-            const user = state.currentUser;
-            if (user) {
-                const inicial = (user.nombre || 'V').charAt(0).toUpperCase();
-                const vetFirstName = user.nombre.split(' ')[0]; // Primer nombre
-                
-                // Actualizar avatar en topbar
-                const avatarTopbar = document.getElementById('vetAvatarCircle');
-                if (avatarTopbar) avatarTopbar.textContent = inicial;
-                
-                // Actualizar avatar en banner
-                const avatarBanner = document.getElementById('vetBannerAvatar');
-                if (avatarBanner) avatarBanner.textContent = inicial;
-                
-                // Actualizar nombre
-                const userNameTopbar = document.getElementById('vetUserName');
-                if (userNameTopbar) userNameTopbar.textContent = user.nombre;
-                
-                const vetFirstNameSpan = document.getElementById('vetFirstName');
-                if (vetFirstNameSpan) vetFirstNameSpan.textContent = vetFirstName;
-            }
-        }
-
+       function actualizarAvatarVeterinario() {
+    const user = state.currentUser;
+    if (user) {
+        const inicial = (user.nombre || 'V').charAt(0).toUpperCase();
+        const vetFirstName = user.nombre.split(' ')[0]; // Primer nombre
+        const userRole = user.rol || 'VETERINARIO';
+        
+        // Actualizar avatar en banner
+        const avatarBanner = document.getElementById('vetBannerAvatar');
+        if (avatarBanner) avatarBanner.textContent = inicial;
+        
+        // Actualizar nombre
+        const vetFirstNameSpan = document.getElementById('vetFirstName');
+        if (vetFirstNameSpan) vetFirstNameSpan.textContent = vetFirstName;
+        
+        // Actualizar rol debajo del avatar en el banner
+        const roleBelowAvatar = document.getElementById('vetRoleBelowAvatar');
+        if (roleBelowAvatar) roleBelowAvatar.textContent = userRole;
+        
+        // Actualizar rol en el sidebar footer
+        const roleSidebar = document.getElementById('vetRoleSidebar');
+        if (roleSidebar) roleSidebar.textContent = userRole;
+    }
+}
         async function cargarCitasVeterinario() {
             const vetId = obtenerVetId();
             const contenedor = document.getElementById('listaCitasVeterinario');
