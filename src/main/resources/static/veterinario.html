@@ -592,6 +592,31 @@ body.seccion-historias-activa #seccionHistorias .citas-card {
     min-height: 400px !important;
     padding: 20px !important;
 }
+
+
+        /* ==========================================
+   CONTENEDOR CENTRADOR PARA HISTORIAS CLÍNICAS
+   ========================================== */
+.historias-container-centrado {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.historias-container-centrado .citas-card {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Cuando la sección está activa, forzar que main ocupe todo el ancho */
+body.seccion-historias-activa .main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 40px 20px !important;
+}
         
     </style>
 </head>
@@ -681,25 +706,27 @@ body.seccion-historias-activa #seccionHistorias .citas-card {
     </div>
 </section>
 
-            <!-- SECCIÓN DE HISTORIAS CLÍNICAS (oculta por defecto) -->
+  <!-- SECCIÓN DE HISTORIAS CLÍNICAS (oculta por defecto) -->
 <section id="seccionHistorias" style="display: none;">
-    <div class="citas-card">
-        <h2>📋 Historias Clínicas</h2>
-        
-        <!-- Barra de búsqueda en tiempo real -->
-        <div class="form-group" style="margin-bottom: 20px;">
-            <label for="buscadorHistorias">Buscar por nombre de mascota o número de expediente</label>
-            <input type="text" id="buscadorHistorias" placeholder="Ej: Toby, Milu, HC-0001...">
-        </div>
-        
-        <!-- Contenedor de resultados -->
-        <div id="resultadosHistorias">
-            <p style="text-align: center; color: var(--clr-gray); padding: 20px;">
-                Escribe el nombre de una mascota para buscar su historia clínica.
-            </p>
+    <div class="historias-container-centrado">
+        <div class="citas-card">
+            <h2>📋 Historias Clínicas</h2>
+            
+            <!-- Barra de búsqueda en tiempo real -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="buscadorHistorias">Buscar por nombre de mascota o número de expediente</label>
+                <input type="text" id="buscadorHistorias" placeholder="Ej: Toby, Milu, HC-0001...">
+            </div>
+            
+            <!-- Contenedor de resultados -->
+            <div id="resultadosHistorias">
+                <p style="text-align: center; color: var(--clr-gray); padding: 20px;">
+                    Escribe el nombre de una mascota para buscar su historia clínica.
+                </p>
+            </div>
         </div>
     </div>
-</section>
+</section>         
 
 <!-- PANEL DE PACIENTES (DEBAJO DE LAS CITAS) -->
 <section class="patients-panel">
