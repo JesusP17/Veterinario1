@@ -954,6 +954,147 @@
             window.location.href = `historia-clinica.html?mascotaId=${mascotaId}`;
         }
 
+        // Variable global para almacenar las mascotas y hacer búsqueda instantánea
+let todasLasMascotas = [];
+
+// Función para mostrar la sección de Historias Clínicas
+function mostrarSeccionHistorias(event) {
+    if (event) event.preventDefault();
+    
+    // Ocultar dashboard principal
+    document.querySelector('.welcome-banner').style.display = 'none';
+    document.querySelector('.metrics-grid').style.display = 'none';
+    document.querySelector('.appointments-section').style.display = 'none';
+    document.querySelector('.patients-panel').style.display = 'none';
+    
+    // Mostrar sección de historias
+    document.getElementById('seccionHistorias').style.display = 'block';
+    
+    // Actualizar sidebar activo
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.getElementById('navHistorias').classList.add('active');
+    
+    // Cargar mascotas si no están cargadas aún
+    if (todasLasMascotas.length === 0) {
+        cargarTodasLasMascotas();
+    }
+}
+
+// Función para volver al dashboard (Inicio)
+function volverAlDashboard() {
+    document.querySelector('.welcome-banner').style.display = 'block';
+    document.querySelector('.metrics-grid').style.display = 'block';
+    document.querySelector('.appointments-section').style.display = 'block';
+    document.querySelector('.patients-panel').style.display = 'block';
+    
+    document.getElementById('seccionHistorias').style.display = 'none';
+    
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    // Marca el primer elemento (Inicio) como activo
+    document.querySelector('.sidebar-nav .nav-item').classList.add('active');
+}
+
+// Cargar todas las mascotas desde el backend
+async function cargarTodasLasMascotas() {
+    try {
+        const res = await fetch('/api/mascotas');
+        if (res.ok) {
+            todasLasMascotas = await res.json();
+        }
+    } catch (err) {
+        console.error("Error cargando mascotas:", err);
+    }
+}
+
+        // Función de filtrado en tiempo real
+function filtrarMascotas(texto) {
+    const contenedor = document.getElementById('resultadosHistorias');
+    const textoLower = texto.toLowerCase().trim();
+    
+    if (textoLower.length < 2) {
+        contenedor.innerHTML = '<p style="text-align: center; color: var(--clr-gray); padding: 20px;">Escribe al menos 2 caracteres para buscar.</p>';
+        return;
+    }
+
+    // Filtra por nombre de mascota O nombre del propietario
+    const filtradas = todasLasMascotas.filter(m => 
+        m.nombre.toLowerCase().includes(textoLower) || 
+        (m.propietario && m.propietario.nombre.toLowerCase().includes(textoLower))
+    );
+
+    if (filtradas.length === 0) {
+        contenedor.innerHTML = '<p style="text-align: center; color: var(--clr-gray); padding: 20px;">No se encontraron mascotas con ese nombre o propietario.</p>';
+        return;
+    }
+
+    let html = '<div style="display: grid; gap: 12px;">';
+    filtradas.forEach(m => {
+        const edad = m.fechaNacimiento ? calcularEdad(m.fechaNacimiento) : 'Desconocida';
+        const propietario = m.propietario ? m.propietario.nombre : 'Sin propietario';
+        
+        html += `
+            <div class="cita-item" style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f9fafb'" onclick="mostrarResumenMascota(${m.id})">
+                <div class="cita-item-header">
+                    <span class="cita-mascota">🐾 ${m.nombre} (${m.especie})</span>
+                    <span style="font-size: 0.8rem; color: var(--clr-gray);">ID: ${m.id}</span>
+                </div>
+                <div class="cita-detalles">
+                    <strong>Propietario:</strong> ${propietario} | <strong>Raza:</strong> ${m.raza || 'N/A'} | <strong>Edad:</strong> ${edad}
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    contenedor.innerHTML = html;
+}
+
+// Función auxiliar para calcular edad
+function calcularEdad(fechaNacimiento) {
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+    }
+    return edad + " años";
+}
+
+        // Muestra la ficha resumen de la mascota seleccionada
+function mostrarResumenMascota(mascotaId) {
+    const mascota = todasLasMascotas.find(m => m.id === mascotaId);
+    if (!mascota) return;
+
+    const propietario = mascota.propietario ? mascota.propietario.nombre : 'No registrado';
+    const edad = mascota.fechaNacimiento ? calcularEdad(mascota.fechaNacimiento) : 'Desconocida';
+
+    const contenedor = document.getElementById('resultadosHistorias');
+    contenedor.innerHTML = `
+        <div class="citas-card" style="border: 2px solid var(--clr-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; color: var(--clr-primary);">🐾 ${mascota.nombre}</h3>
+                <button class="btn-sm btn-outline-sm" onclick="restaurarBusqueda()">← Volver a la búsqueda</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; font-size: 0.95rem;">
+                <div><strong>Especie:</strong> ${mascota.especie}</div>
+                <div><strong>Raza:</strong> ${mascota.raza || 'N/A'}</div>
+                <div><strong>Edad:</strong> ${edad}</div>
+                <div><strong>Peso:</strong> ${mascota.peso ? mascota.peso + ' kg' : 'N/A'}</div>
+                <div style="grid-column: 1 / -1;"><strong>Propietario:</strong> ${propietario}</div>
+            </div>
+            <div style="background: #f0f9ff; padding: 16px; border-radius: 8px; text-align: center;">
+                <p style="margin: 0 0 12px 0; color: var(--clr-gray); font-size: 0.9rem;">Para ver el historial completo de consultas, diagnósticos y tratamientos:</p>
+                <a href="historia-clinica.html?mascotaId=${mascota.id}" class="btn-primary" style="text-decoration: none; display: inline-block; padding: 10px 20px;">📋 Ver Historia Clínica Completa</a>
+            </div>
+        </div>
+    `;
+}
+
+function restaurarBusqueda() {
+    const input = document.getElementById('buscadorHistorias');
+    filtrarMascotas(input.value);
+}
+
         window.atenderCita = atenderCita;
         window.registrarNuevaConsulta = registrarNuevaConsulta;
         window.verHistoriaClinica = verHistoriaClinica;
