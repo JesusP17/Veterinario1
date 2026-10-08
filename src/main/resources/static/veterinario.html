@@ -587,6 +587,26 @@
     </div>
 </section>
 
+            <!-- SECCIÓN DE HISTORIAS CLÍNICAS (oculta por defecto) -->
+<section id="seccionHistorias" style="display: none;">
+    <div class="citas-card">
+        <h2>📋 Historias Clínicas</h2>
+        
+        <!-- Barra de búsqueda en tiempo real -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="buscadorHistorias">Buscar por nombre de mascota o número de expediente</label>
+            <input type="text" id="buscadorHistorias" placeholder="Ej: Toby, Milu, HC-0001...">
+        </div>
+        
+        <!-- Contenedor de resultados -->
+        <div id="resultadosHistorias">
+            <p style="text-align: center; color: var(--clr-gray); padding: 20px;">
+                Escribe el nombre de una mascota para buscar su historia clínica.
+            </p>
+        </div>
+    </div>
+</section>
+
 <!-- PANEL DE PACIENTES (DEBAJO DE LAS CITAS) -->
 <section class="patients-panel">
     <div class="patients-grid">
@@ -599,6 +619,8 @@
             </div>
             <div class="metric-large" id="metricSeguimientoLarge">0</div>
         </div>
+
+        
 
         <!-- Tarjeta: Pacientes recientes -->
         <div class="patient-card wide-card">
