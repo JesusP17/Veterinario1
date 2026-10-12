@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Cita;
@@ -112,11 +113,14 @@ public class CitaController {
     }
 
     /**
-     * Asignar un veterinario a una cita médica y confirmarla
-     * PUT /api/citas/{id}/asignar-veterinario/{vetId}
+     * Asignar un veterinario a una cita médica y confirmarla considerando su horario y disponibilidad
+     * PUT /api/citas/{id}/asignar-veterinario/{vetId}?forzar=false
      */
     @PutMapping("/{id}/asignar-veterinario/{vetId}")
-    public ResponseEntity<?> asignarVeterinario(@PathVariable Long id, @PathVariable Long vetId) {
+    public ResponseEntity<?> asignarVeterinario(
+            @PathVariable Long id, 
+            @PathVariable Long vetId,
+            @RequestParam(required = false, defaultValue = "false") boolean forzar) {
         Map<String, Object> response = new HashMap<>();
         Optional<Cita> citaOpt = citaRepository.findById(id);
         if (citaOpt.isEmpty()) {
@@ -133,13 +137,164 @@ public class CitaController {
         }
 
         Cita cita = citaOpt.get();
-        cita.setVeterinario(vetOpt.get());
+        Usuario vet = vetOpt.get();
+
+        // 1. Validar conflicto de horario: ¿El veterinario ya tiene otra cita activa a esa hora?
+        Optional<Cita> conflicto = citaRepository.buscarConflictoVeterinario(vetId, cita.getFecha(), cita.getHora());
+        if (conflicto.isPresent() && !conflicto.get().getId().equals(cita.getId())) {
+            if (!forzar) {
+                response.put("exito", false);
+                response.put("conflictoHorario", true);
+                response.put("mensaje", "El Dr./Dra. " + vet.getNombre() + " ya tiene otra cita activa agendada para el " + 
+                    cita.getFecha() + " a las " + cita.getHora() + ".");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+        }
+
+        // 2. Verificar si está dentro del horario laboral del veterinario
+        boolean fueraDeTurno = false;
+        if (vet.getHorarioInicio() != null && vet.getHorarioFin() != null && cita.getHora() != null) {
+            if (cita.getHora().isBefore(vet.getHorarioInicio()) || cita.getHora().isAfter(vet.getHorarioFin())) {
+                fueraDeTurno = true;
+            }
+        }
+
+        cita.setVeterinario(vet);
         cita.setEstado("CONFIRMADA");
         citaRepository.save(cita);
 
+        String mensaje = "Cita asignada y confirmada con el " + vet.getNombre() + ".";
+        if (fueraDeTurno) {
+            mensaje += " (Nota: la hora " + cita.getHora() + " está fuera de su horario regular " + 
+                       vet.getHorarioInicio() + " - " + vet.getHorarioFin() + ").";
+        }
+
         response.put("exito", true);
-        response.put("mensaje", "Cita asignada y confirmada con el " + vetOpt.get().getNombre() + ".");
+        response.put("mensaje", mensaje);
+        response.put("fueraDeTurno", fueraDeTurno);
         response.put("cita", cita);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Consultar disponibilidad y horarios de veterinarios para una fecha y hora específica
+     * GET /api/citas/disponibilidad-veterinarios?fecha=YYYY-MM-DD&hora=HH:mm
+     */
+    @GetMapping("/disponibilidad-veterinarios")
+    public ResponseEntity<?> consultarDisponibilidadVeterinarios(
+            @RequestParam(required = false) String fecha,
+            @RequestParam(required = false) String hora) {
+        
+        List<Usuario> veterinarios = usuarioRepository.findByRolIgnoreCase("VETERINARIO");
+        LocalDate f = fecha != null ? LocalDate.parse(fecha) : LocalDate.now();
+        LocalTime h = (hora != null && !hora.trim().isEmpty()) ? LocalTime.parse(hora) : null;
+
+        List<Map<String, Object>> resultado = new java.util.ArrayList<>();
+        for (Usuario v : veterinarios) {
+            Map<String, Object> info = new HashMap<>();
+            info.put("veterinario", v);
+            
+            boolean enHorario = true;
+            if (h != null && v.getHorarioInicio() != null && v.getHorarioFin() != null) {
+                enHorario = !h.isBefore(v.getHorarioInicio()) && !h.isAfter(v.getHorarioFin());
+            }
+            info.put("enHorario", enHorario);
+
+            boolean ocupado = false;
+            if (h != null) {
+                Optional<Cita> conflicto = citaRepository.buscarConflictoVeterinario(v.getId(), f, h);
+                ocupado = conflicto.isPresent();
+            }
+            info.put("ocupado", ocupado);
+            info.put("disponible", enHorario && !ocupado);
+
+            // Citas activas asignadas a este veterinario en la fecha consultada
+            List<Cita> citasDia = citaRepository.findByVeterinarioIdAndFecha(v.getId(), f);
+            info.put("totalCitasDia", citasDia.size());
+            info.put("citasDia", citasDia);
+
+            resultado.add(info);
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    /**
+     * Auto-asignar citas pendientes a veterinarios dependiendo de su horario laboral y disponibilidad
+     * POST /api/citas/auto-asignar-por-horario
+     */
+    @PostMapping("/auto-asignar-por-horario")
+    @Transactional
+    public ResponseEntity<?> autoAsignarPorHorario() {
+        Map<String, Object> response = new HashMap<>();
+        List<Cita> citas = citaRepository.findAll();
+        List<Usuario> veterinarios = usuarioRepository.findByRolIgnoreCase("VETERINARIO");
+
+        int asignadas = 0;
+        List<Map<String, Object>> detalles = new java.util.ArrayList<>();
+
+        for (Cita c : citas) {
+            if (c.getVeterinario() == null && !"CANCELADA".equalsIgnoreCase(c.getEstado())) {
+                LocalDate fecha = c.getFecha();
+                LocalTime hora = c.getHora();
+                String servNombre = (c.getServicio() != null ? c.getServicio() : "").toLowerCase();
+
+                Usuario mejorVet = null;
+
+                // 1. Prioridad: Veterinario dentro de su horario, sin conflicto a esa hora y cuya especialidad coincida
+                for (Usuario v : veterinarios) {
+                    boolean enHorario = (v.getHorarioInicio() == null || v.getHorarioFin() == null) ||
+                            (!hora.isBefore(v.getHorarioInicio()) && !hora.isAfter(v.getHorarioFin()));
+                    boolean sinConflicto = citaRepository.buscarConflictoVeterinario(v.getId(), fecha, hora).isEmpty();
+
+                    if (enHorario && sinConflicto) {
+                        String esp = (v.getEspecialidad() != null ? v.getEspecialidad() : "").toLowerCase();
+                        if (!esp.isEmpty() && (servNombre.contains(esp) || esp.contains(servNombre)
+                                || (servNombre.contains("consulta") && esp.contains("general"))
+                                || (servNombre.contains("cirug") && esp.contains("cirug"))
+                                || (servNombre.contains("vacun") && esp.contains("vacun"))
+                                || (servNombre.contains("diag") || servNombre.contains("imag") && esp.contains("diag")))) {
+                            mejorVet = v;
+                            break;
+                        }
+                    }
+                }
+
+                // 2. Si no hubo coincidencia de especialidad, cualquier veterinario en horario laboral y libre
+                if (mejorVet == null) {
+                    for (Usuario v : veterinarios) {
+                        boolean enHorario = (v.getHorarioInicio() == null || v.getHorarioFin() == null) ||
+                                (!hora.isBefore(v.getHorarioInicio()) && !hora.isAfter(v.getHorarioFin()));
+                        boolean sinConflicto = citaRepository.buscarConflictoVeterinario(v.getId(), fecha, hora).isEmpty();
+                        if (enHorario && sinConflicto) {
+                            mejorVet = v;
+                            break;
+                        }
+                    }
+                }
+
+                if (mejorVet != null) {
+                    c.setVeterinario(mejorVet);
+                    c.setEstado("CONFIRMADA");
+                    citaRepository.save(c);
+                    asignadas++;
+
+                    Map<String, Object> d = new HashMap<>();
+                    d.put("citaId", c.getId());
+                    d.put("fecha", fecha.toString());
+                    d.put("hora", hora.toString());
+                    d.put("servicio", c.getServicio());
+                    d.put("veterinario", mejorVet.getNombre());
+                    d.put("turno", mejorVet.getTurno() != null ? mejorVet.getTurno() : "Horario General");
+                    detalles.add(d);
+                }
+            }
+        }
+
+        response.put("exito", true);
+        response.put("asignadas", asignadas);
+        response.put("detalles", detalles);
+        response.put("mensaje", "Se auto-asignaron " + asignadas + " citas según el horario laboral y turnos de los veterinarios.");
         return ResponseEntity.ok(response);
     }
 

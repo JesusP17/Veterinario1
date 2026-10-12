@@ -59,25 +59,68 @@ public class DataInitializer {
             if (vet == null) {
                 vet = new Usuario("Dr. David García", "dr.garcia@canopolis.com", "vet123", "VETERINARIO", "3109876543", "Consultorio 1 - Canopolis");
                 vet.setEspecialidad("Consulta General");
+                vet.setHorarioInicio(LocalTime.of(8, 0));
+                vet.setHorarioFin(LocalTime.of(14, 0));
+                vet.setTurno("Mañana (08:00 - 14:00)");
+                vet.setDiasLaborales("Lunes a Sábado");
                 vet = usuarioRepository.save(vet);
-                System.out.println(">> [DataInitializer] Usuario Veterinario creado: dr.garcia@canopolis.com / vet123 (Consulta General)");
+                System.out.println(">> [DataInitializer] Usuario Veterinario creado: dr.garcia@canopolis.com / vet123 (Consulta General - Horario: 08:00 - 14:00)");
+            } else if (vet.getHorarioInicio() == null) {
+                vet.setHorarioInicio(LocalTime.of(8, 0));
+                vet.setHorarioFin(LocalTime.of(14, 0));
+                vet.setTurno("Mañana (08:00 - 14:00)");
+                vet.setDiasLaborales("Lunes a Sábado");
+                usuarioRepository.save(vet);
             }
 
-            if (usuarioRepository.findByEmail("dra.lopez@canopolis.com").isEmpty()) {
-                Usuario vetCirujana = new Usuario("Dra. María Elena López", "dra.lopez@canopolis.com", "vet123", "VETERINARIO", "3112223344", "SDR-Quirófano 2");
+            Usuario vetCirujana = usuarioRepository.findByEmail("dra.lopez@canopolis.com").orElse(null);
+            if (vetCirujana == null) {
+                vetCirujana = new Usuario("Dra. María Elena López", "dra.lopez@canopolis.com", "vet123", "VETERINARIO", "3112223344", "SDR-Quirófano 2");
                 vetCirujana.setEspecialidad("Cirugía Especializada");
+                vetCirujana.setHorarioInicio(LocalTime.of(14, 0));
+                vetCirujana.setHorarioFin(LocalTime.of(20, 0));
+                vetCirujana.setTurno("Tarde (14:00 - 20:00)");
+                vetCirujana.setDiasLaborales("Lunes a Viernes");
+                usuarioRepository.save(vetCirujana);
+            } else if (vetCirujana.getHorarioInicio() == null) {
+                vetCirujana.setHorarioInicio(LocalTime.of(14, 0));
+                vetCirujana.setHorarioFin(LocalTime.of(20, 0));
+                vetCirujana.setTurno("Tarde (14:00 - 20:00)");
+                vetCirujana.setDiasLaborales("Lunes a Viernes");
                 usuarioRepository.save(vetCirujana);
             }
 
-            if (usuarioRepository.findByEmail("dr.ruiz@canopolis.com").isEmpty()) {
-                Usuario vetVacunas = new Usuario("Dr. Carlos Andrés Ruiz", "dr.ruiz@canopolis.com", "vet123", "VETERINARIO", "3124445566", "Consultorio 3 - Vacunación");
+            Usuario vetVacunas = usuarioRepository.findByEmail("dr.ruiz@canopolis.com").orElse(null);
+            if (vetVacunas == null) {
+                vetVacunas = new Usuario("Dr. Carlos Andrés Ruiz", "dr.ruiz@canopolis.com", "vet123", "VETERINARIO", "3124445566", "Consultorio 3 - Vacunación");
                 vetVacunas.setEspecialidad("Vacunación y Desparasitación");
+                vetVacunas.setHorarioInicio(LocalTime.of(8, 0));
+                vetVacunas.setHorarioFin(LocalTime.of(14, 0));
+                vetVacunas.setTurno("Mañana (08:00 - 14:00)");
+                vetVacunas.setDiasLaborales("Lunes a Sábado");
+                usuarioRepository.save(vetVacunas);
+            } else if (vetVacunas.getHorarioInicio() == null) {
+                vetVacunas.setHorarioInicio(LocalTime.of(8, 0));
+                vetVacunas.setHorarioFin(LocalTime.of(14, 0));
+                vetVacunas.setTurno("Mañana (08:00 - 14:00)");
+                vetVacunas.setDiasLaborales("Lunes a Sábado");
                 usuarioRepository.save(vetVacunas);
             }
 
-            if (usuarioRepository.findByEmail("dra.ramirez@canopolis.com").isEmpty()) {
-                Usuario vetDiag = new Usuario("Dra. Sofía Ramírez", "dra.ramirez@canopolis.com", "vet123", "VETERINARIO", "3136667788", "Centro de Diagnóstico");
+            Usuario vetDiag = usuarioRepository.findByEmail("dra.ramirez@canopolis.com").orElse(null);
+            if (vetDiag == null) {
+                vetDiag = new Usuario("Dra. Sofía Ramírez", "dra.ramirez@canopolis.com", "vet123", "VETERINARIO", "3136667788", "Centro de Diagnóstico");
                 vetDiag.setEspecialidad("Diagnóstico por Imagen");
+                vetDiag.setHorarioInicio(LocalTime.of(13, 0));
+                vetDiag.setHorarioFin(LocalTime.of(19, 0));
+                vetDiag.setTurno("Tarde (13:00 - 19:00)");
+                vetDiag.setDiasLaborales("Lunes a Sábado");
+                usuarioRepository.save(vetDiag);
+            } else if (vetDiag.getHorarioInicio() == null) {
+                vetDiag.setHorarioInicio(LocalTime.of(13, 0));
+                vetDiag.setHorarioFin(LocalTime.of(19, 0));
+                vetDiag.setTurno("Tarde (13:00 - 19:00)");
+                vetDiag.setDiasLaborales("Lunes a Sábado");
                 usuarioRepository.save(vetDiag);
             }
 

@@ -123,6 +123,11 @@ public class UsuarioController {
         if (datos.getRol() != null) usuario.setRol(datos.getRol());
         if (datos.getTelefono() != null) usuario.setTelefono(datos.getTelefono());
         if (datos.getDireccion() != null) usuario.setDireccion(datos.getDireccion());
+        if (datos.getEspecialidad() != null) usuario.setEspecialidad(datos.getEspecialidad());
+        if (datos.getHorarioInicio() != null) usuario.setHorarioInicio(datos.getHorarioInicio());
+        if (datos.getHorarioFin() != null) usuario.setHorarioFin(datos.getHorarioFin());
+        if (datos.getTurno() != null) usuario.setTurno(datos.getTurno());
+        if (datos.getDiasLaborales() != null) usuario.setDiasLaborales(datos.getDiasLaborales());
 
         usuarioRepository.save(usuario);
 
@@ -130,6 +135,50 @@ public class UsuarioController {
         response.put("mensaje", "Datos de usuario actualizados correctamente.");
         response.put("usuario", usuario);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Actualizar horario laboral y turno de un veterinario
+     * PUT /api/usuarios/{id}/horario
+     */
+    @PutMapping("/{id}/horario")
+    public ResponseEntity<?> actualizarHorarioVeterinario(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        Map<String, Object> response = new HashMap<>();
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            response.put("exito", false);
+            response.put("mensaje", "Usuario no encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        try {
+            if (payload.containsKey("horarioInicio") && payload.get("horarioInicio") != null && !payload.get("horarioInicio").trim().isEmpty()) {
+                usuario.setHorarioInicio(java.time.LocalTime.parse(payload.get("horarioInicio").trim()));
+            }
+            if (payload.containsKey("horarioFin") && payload.get("horarioFin") != null && !payload.get("horarioFin").trim().isEmpty()) {
+                usuario.setHorarioFin(java.time.LocalTime.parse(payload.get("horarioFin").trim()));
+            }
+            if (payload.containsKey("turno") && payload.get("turno") != null) {
+                usuario.setTurno(payload.get("turno").trim());
+            }
+            if (payload.containsKey("diasLaborales") && payload.get("diasLaborales") != null) {
+                usuario.setDiasLaborales(payload.get("diasLaborales").trim());
+            }
+            if (payload.containsKey("especialidad") && payload.get("especialidad") != null) {
+                usuario.setEspecialidad(payload.get("especialidad").trim());
+            }
+
+            usuarioRepository.save(usuario);
+            response.put("exito", true);
+            response.put("mensaje", "Horario laboral actualizado exitosamente para " + usuario.getNombre() + ".");
+            response.put("usuario", usuario);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("exito", false);
+            response.put("mensaje", "Error al procesar el horario: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 
     /**

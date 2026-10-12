@@ -42,4 +42,12 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     // Buscar citas para el panel veterinario: asignadas a él o citas PENDIENTES sin asignar
     @Query("SELECT c FROM Cita c WHERE c.veterinario.id = :vetId OR (c.veterinario IS NULL AND c.estado = 'PENDIENTE') ORDER BY c.fecha ASC, c.hora ASC")
     List<Cita> findCitasParaVeterinario(@Param("vetId") Long vetId);
+
+    // Buscar conflicto de horario para un veterinario específico en una fecha y hora
+    @Query("SELECT c FROM Cita c WHERE c.veterinario.id = :vetId AND c.fecha = :fecha AND c.hora = :hora AND c.estado <> 'CANCELADA'")
+    Optional<Cita> buscarConflictoVeterinario(@Param("vetId") Long vetId, @Param("fecha") LocalDate fecha, @Param("hora") LocalTime hora);
+
+    // Buscar citas activas de un veterinario para una fecha específica (para agenda / matriz de horarios)
+    @Query("SELECT c FROM Cita c WHERE c.veterinario.id = :vetId AND c.fecha = :fecha AND c.estado <> 'CANCELADA' ORDER BY c.hora ASC")
+    List<Cita> findByVeterinarioIdAndFecha(@Param("vetId") Long vetId, @Param("fecha") LocalDate fecha);
 }

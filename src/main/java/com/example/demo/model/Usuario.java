@@ -134,11 +134,55 @@ public class Usuario {
         this.fechaRegistro = fechaRegistro;
     }
 
+    @Column(name = "horario_inicio")
+    private java.time.LocalTime horarioInicio = java.time.LocalTime.of(8, 0);
+
+    @Column(name = "horario_fin")
+    private java.time.LocalTime horarioFin = java.time.LocalTime.of(17, 0);
+
+    @Column(name = "turno", length = 50)
+    private String turno = "Turno Completo (08:00 - 17:00)";
+
+    @Column(name = "dias_laborales", length = 100)
+    private String diasLaborales = "Lunes a Sábado";
+
     public String getEspecialidad() {
         return especialidad;
     }
 
     public void setEspecialidad(String especialidad) {
         this.especialidad = especialidad;
+    }
+
+    public java.time.LocalTime getHorarioInicio() {
+        return horarioInicio;
+    }
+
+    public void setHorarioInicio(java.time.LocalTime horarioInicio) {
+        this.horarioInicio = horarioInicio;
+    }
+
+    public java.time.LocalTime getHorarioFin() {
+        return horarioFin;
+    }
+
+    public void setHorarioFin(java.time.LocalTime horarioFin) {
+        this.horarioFin = horarioFin;
+    }
+
+    public String getTurno() {
+        return turno;
+    }
+
+    public void setTurno(String turno) {
+        this.turno = turno;
+    }
+
+    public String getDiasLaborales() {
+        return diasLaborales;
+    }
+
+    public void setDiasLaborales(String diasLaborales) {
+        this.diasLaborales = diasLaborales;
     }
 }

@@ -429,6 +429,151 @@
 
         }
 
+        /* =========================
+           ESTILOS ASIGNACIÓN POR HORARIO
+        ========================= */
+        .horario-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+        .horario-kpi-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .horario-kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .horario-kpi-info h4 {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .horario-kpi-info .number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .horario-badge-en-turno {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .horario-badge-fuera-turno {
+            background: #fef9c3;
+            color: #a16207;
+            border: 1px solid #fef08a;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .horario-badge-ocupado {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .matriz-container {
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .matriz-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            min-width: 900px;
+        }
+        .matriz-tabla th, .matriz-tabla td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+        }
+        .matriz-tabla th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+        }
+        .slot-libre {
+            background: #f0fdf4;
+            color: #15803d;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 6px 4px;
+            cursor: pointer;
+            border: 1px dashed #86efac;
+            transition: 0.2s;
+            font-size: 0.75rem;
+        }
+        .slot-libre:hover {
+            background: #dcfce7;
+            transform: scale(1.02);
+        }
+        .slot-ocupado {
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 6px 4px;
+            border: 1px solid #bfdbfe;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 0.74rem;
+        }
+        .slot-fuera {
+            background: #f8fafc;
+            color: #94a3b8;
+            border-radius: 6px;
+            padding: 6px 4px;
+            font-size: 0.74rem;
+        }
+        .vet-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .vet-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
     </style>
 </head>
 
@@ -461,6 +606,11 @@
             <li>
                 <button onclick="mostrarSeccion('section-citas', this)">
                     📅 Gestión de Citas
+                </button>
+            </li>
+            <li>
+                <button onclick="mostrarSeccion('section-asignar-horarios', this)">
+                    ⏰ Asignar por Horario
                 </button>
             </li>
             <li>
@@ -732,6 +882,234 @@
                 </table>
             </div>
         </section>
+
+        <!-- =========================
+             APARTADO: ASIGNACIÓN DE CITAS SEGÚN HORARIO DE VETERINARIOS
+        ========================== -->
+        <section class="panel admin-section" id="section-asignar-horarios" style="display: none;">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
+                <div>
+                    <h3 style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px; color: #0f172a; font-size: 1.3rem;">
+                        ⏰ Asignación de Citas según Horarios de Veterinarios
+                    </h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">
+                        Asigna citas médicas a cada especialista validando su turno laboral (hora de inicio/fin) y disponibilidad en tiempo real sin colisiones de agenda.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <button onclick="autoAsignarCitasPorHorarioInteligente()" style="background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.25); transition: 0.2s;">
+                        ⚡ Auto-asignar Citas por Horario
+                    </button>
+                    <button onclick="scrollHaciaMatrizHorarios()" style="background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;">
+                        🗓️ Agenda / Matriz del Día
+                    </button>
+                    <button onclick="scrollHaciaTarjetasVets()" style="background: #475569; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;">
+                        👨‍⚕️ Configurar Turnos
+                    </button>
+                </div>
+            </div>
+
+            <!-- TARJETAS DE INDICADORES DE HORARIOS -->
+            <div class="horario-kpi-grid">
+                <div class="horario-kpi-card">
+                    <div class="horario-kpi-icon" style="background: #e0f2fe; color: #0284c7;">👨‍⚕️</div>
+                    <div class="horario-kpi-info">
+                        <h4>Veterinarios Activos</h4>
+                        <div class="number" id="kpi-vets-turno">0</div>
+                    </div>
+                </div>
+                <div class="horario-kpi-card">
+                    <div class="horario-kpi-icon" style="background: #fef3c7; color: #d97706;">📅</div>
+                    <div class="horario-kpi-info">
+                        <h4>Pendientes por Asignar</h4>
+                        <div class="number" id="kpi-citas-sin-asignar" style="color: #d97706;">0</div>
+                    </div>
+                </div>
+                <div class="horario-kpi-card">
+                    <div class="horario-kpi-icon" style="background: #dcfce7; color: #16a34a;">🕒</div>
+                    <div class="horario-kpi-info">
+                        <h4>Turnos en Cobertura</h4>
+                        <div class="number" style="font-size: 1.15rem; color: #16a34a;">08:00 - 20:00</div>
+                    </div>
+                </div>
+                <div class="horario-kpi-card">
+                    <div class="horario-kpi-icon" style="background: #ede9fe; color: #7c3aed;">⚡</div>
+                    <div class="horario-kpi-info">
+                        <h4>Asignadas en Turno</h4>
+                        <div class="number" id="kpi-citas-confirmadas-turno" style="color: #7c3aed;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BARRA DE FILTROS Y BÚSQUEDA -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #64748b; margin-bottom: 3px;">FECHA DE CITA</label>
+                        <input type="date" id="filtroFechaHorario" onchange="filtrarCitasHorario()" style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #64748b; margin-bottom: 3px;">ESTADO ASIGNACIÓN</label>
+                        <select id="filtroEstadoHorario" onchange="filtrarCitasHorario()" style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                            <option value="TODOS">Todas las Citas</option>
+                            <option value="SIN_ASIGNAR" selected>⚠️ Pendientes de Asignar (Sin Vet)</option>
+                            <option value="CONFIRMADA">✅ Citas Confirmadas</option>
+                            <option value="ATENDIDA">🩺 Citas Atendidas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #64748b; margin-bottom: 3px;">TURNO DE LA CITA</label>
+                        <select id="filtroTurnoCitaHorario" onchange="filtrarCitasHorario()" style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                            <option value="TODOS">Todos los turnos</option>
+                            <option value="MANANA">Turno Mañana (08:00 - 14:00)</option>
+                            <option value="TARDE">Turno Tarde (14:00 - 20:00)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #64748b; margin-bottom: 3px;">BÚSQUEDA RÁPIDA</label>
+                        <input type="text" id="buscarCitaHorarioInput" placeholder="🔍 Mascota, cliente, servicio..." onkeyup="filtrarCitasHorario()" style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; width: 220px;">
+                    </div>
+                    <button onclick="limpiarFiltrosHorario()" style="background: white; border: 1px solid #cbd5e1; padding: 7px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #475569;">
+                        Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- TABLA DE CITAS PARA ASIGNACIÓN POR HORARIOS -->
+            <div class="table-container" style="margin-bottom: 35px;">
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 130px;">Fecha y Hora</th>
+                            <th style="min-width: 160px;">Paciente y Propietario</th>
+                            <th style="min-width: 160px;">Servicio Solicitado</th>
+                            <th style="min-width: 180px;">Veterinario Actual</th>
+                            <th style="min-width: 280px;">Veterinarios por Horario (Turno & Disponibilidad)</th>
+                            <th style="min-width: 150px; text-align: center;">Acción de Asignación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-citas-horarios">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 25px; color: #64748b;">
+                                Cargando citas y horarios del equipo veterinario...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ==============================================
+                 VISUALIZADOR DE MATRIZ DE HORARIOS DEL DÍA
+            =============================================== -->
+            <div id="seccion-matriz-horarios" style="margin-top: 35px; border-top: 1px solid #e2e8f0; padding-top: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 1.15rem; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                            🗓️ Matriz de Ocupación y Horarios en Tiempo Real
+                        </h3>
+                        <p style="font-size: 0.85rem; color: #64748b;">
+                            Visualiza los bloques por hora de cada veterinario para la fecha seleccionada.
+                        </p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="date" id="fechaMatrizAgenda" onchange="actualizarMatrizAgenda()" style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; font-weight: bold;">
+                        <button onclick="actualizarMatrizAgenda()" style="background: #0284c7; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer;">
+                            🔄 Actualizar Matriz
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 18px; margin-bottom: 12px; font-size: 0.8rem; font-weight: 600; flex-wrap: wrap;">
+                    <span style="display: flex; align-items: center; gap: 6px;"><span style="display: inline-block; width: 14px; height: 14px; background: #dcfce7; border: 1px solid #86efac; border-radius: 4px;"></span> 🟢 En Turno y Disponible</span>
+                    <span style="display: flex; align-items: center; gap: 6px;"><span style="display: inline-block; width: 14px; height: 14px; background: #dbeafe; border: 1px solid #bfdbfe; border-radius: 4px;"></span> 🔵 Cita Programada</span>
+                    <span style="display: flex; align-items: center; gap: 6px;"><span style="display: inline-block; width: 14px; height: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;"></span> ⚪ Fuera de Jornada Laboral</span>
+                </div>
+
+                <div class="matriz-container" id="contenedor-matriz-agenda">
+                    <p style="padding: 20px; text-align: center; color: #64748b;">Generando cuadrícula de horarios...</p>
+                </div>
+            </div>
+
+            <!-- ==============================================
+                 CONFIGURACIÓN DE HORARIOS Y TURNOS DE VETS
+            =============================================== -->
+            <div id="seccion-tarjetas-horarios" style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h3 style="font-size: 1.15rem; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                            👨‍⚕️ Horarios y Turnos Laborales del Equipo Veterinario
+                        </h3>
+                        <p style="font-size: 0.85rem; color: #64748b;">
+                            Modifica las horas de entrada/salida, turno de atención y días de disponibilidad de cada médico.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="grid-vets-horarios" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px;">
+                    <!-- Cargado dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- MODAL DE EDICIÓN DE HORARIO DEL VETERINARIO -->
+        <div id="modalHorarioVetAdmin" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; justify-content: center; align-items: center; padding: 20px;">
+            <div style="background: white; width: 100%; max-width: 480px; border-radius: 12px; padding: 24px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                <button onclick="cerrarModalHorarioVet()" style="position: absolute; top: 14px; right: 14px; border: none; background: none; font-size: 20px; cursor: pointer; color: #64748b;">✕</button>
+                <h3 style="margin-bottom: 8px; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                    ⏰ Configurar Horario Laboral
+                </h3>
+                <p id="modalHorarioVetNombre" style="font-size: 0.88rem; color: #0284c7; font-weight: bold; margin-bottom: 18px;">Dr. ...</p>
+                
+                <form id="formHorarioVetAdmin" onsubmit="guardarHorarioVetAdmin(event)">
+                    <input type="hidden" id="editVetId">
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #334155;">Turno Predeterminado</label>
+                        <select id="editVetTurnoPreset" onchange="aplicarTurnoPreset()" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="MANANA">Turno Mañana (08:00 - 14:00)</option>
+                            <option value="TARDE">Turno Tarde (14:00 - 20:00)</option>
+                            <option value="COMPLETO">Turno Completo (08:00 - 17:00)</option>
+                            <option value="INTERMEDIO">Turno Intermedio (11:00 - 19:00)</option>
+                            <option value="PERSONALIZADO">Horario Personalizado</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #334155;">Hora Entrada *</label>
+                            <input type="time" id="editVetHoraInicio" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #334155;">Hora Salida *</label>
+                            <input type="time" id="editVetHoraFin" required style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #334155;">Días Laborales *</label>
+                        <select id="editVetDiasLaborales" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="Lunes a Sábado">Lunes a Sábado</option>
+                            <option value="Lunes a Viernes">Lunes a Viernes</option>
+                            <option value="Martes a Sábado">Martes a Sábado</option>
+                            <option value="Todos los días (Rotativo)">Todos los días (Rotativo)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #334155;">Especialidad / Cargo Médico</label>
+                        <input type="text" id="editVetEspecialidad" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" onclick="cerrarModalHorarioVet()" style="padding: 9px 16px; border: 1px solid #cbd5e1; background: #f1f5f9; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancelar</button>
+                        <button type="submit" style="padding: 9px 16px; border: none; background: #2563eb; color: white; border-radius: 6px; font-weight: bold; cursor: pointer;">💾 Guardar Horario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- =========================
              GESTIÓN DE CLIENTES / REGISTRO COMPLETO
@@ -1401,6 +1779,7 @@
             if (target) target.style.display = 'block';
             
             if (seccionId === 'section-citas') renderizarCitasAdmin();
+            if (seccionId === 'section-asignar-horarios') renderizarAsignacionHorarios();
             if (seccionId === 'section-clientes') renderizarClientesAdmin();
             if (seccionId === 'section-reportes') renderizarReportesAdmin();
         }
@@ -1612,7 +1991,631 @@
         cargarDashboard();
     }
 
-    // LISTA MAESTRA DE USUARIOS / CLIENTES
+    // ========================================================
+    // APARTADO: ASIGNACIÓN DE CITAS SEGÚN HORARIO Y TURNOS
+    // ========================================================
+    let cacheCitasAdmin = [];
+    let cacheUsuariosAdmin = [];
+
+    async function renderizarAsignacionHorarios() {
+        const tbody = document.getElementById('tabla-citas-horarios');
+        if (!tbody) return;
+
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:25px; color:#64748b;">Consultando citas y horarios del equipo médico...</td></tr>';
+
+        try {
+            const resC = await fetch("/api/citas");
+            const resU = await fetch("/api/usuarios");
+            if (resC.ok && resU.ok) {
+                cacheCitasAdmin = await resC.json();
+                cacheUsuariosAdmin = await resU.json();
+            } else {
+                throw new Error("Offline");
+            }
+        } catch (e) {
+            cacheCitasAdmin = JSON.parse(localStorage.getItem('canopolis_citas') || '[]');
+            cacheUsuariosAdmin = obtenerUsuariosLocal();
+        }
+
+        // Normalizar veterinarios con horarios por defecto si no los tienen
+        cacheUsuariosAdmin.forEach(u => {
+            if (String(u.rol || '').toUpperCase() === 'VETERINARIO') {
+                if (!u.horarioInicio) {
+                    if (u.id === 102 || (u.nombre && u.nombre.includes('López'))) {
+                        u.horarioInicio = "14:00"; u.horarioFin = "20:00"; u.turno = "Turno Tarde (14:00 - 20:00)"; u.diasLaborales = "Lunes a Viernes";
+                    } else if (u.id === 104 || (u.nombre && u.nombre.includes('Ramírez'))) {
+                        u.horarioInicio = "13:00"; u.horarioFin = "19:00"; u.turno = "Turno Tarde (13:00 - 19:00)"; u.diasLaborales = "Lunes a Sábado";
+                    } else {
+                        u.horarioInicio = "08:00"; u.horarioFin = "14:00"; u.turno = "Turno Mañana (08:00 - 14:00)"; u.diasLaborales = "Lunes a Sábado";
+                    }
+                }
+            }
+        });
+
+        // Actualizar KPIs de horarios
+        const vets = cacheUsuariosAdmin.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+        const citasSinAsignar = cacheCitasAdmin.filter(c => !c.veterinario && String(c.estado || '').toUpperCase() !== 'CANCELADA');
+        const citasConfirmadas = cacheCitasAdmin.filter(c => String(c.estado || '').toUpperCase() === 'CONFIRMADA');
+
+        const elKpiVets = document.getElementById('kpi-vets-turno');
+        if (elKpiVets) elKpiVets.textContent = vets.length;
+
+        const elKpiSinAsignar = document.getElementById('kpi-citas-sin-asignar');
+        if (elKpiSinAsignar) elKpiSinAsignar.textContent = citasSinAsignar.length;
+
+        const elKpiConf = document.getElementById('kpi-citas-confirmadas-turno');
+        if (elKpiConf) elKpiConf.textContent = citasConfirmadas.length;
+
+        // Establecer fecha por defecto en la matriz de agenda si está vacía
+        const inputMatriz = document.getElementById('fechaMatrizAgenda');
+        if (inputMatriz && !inputMatriz.value) {
+            const hoyStr = new Date().toISOString().substring(0, 10);
+            inputMatriz.value = hoyStr;
+        }
+
+        filtrarCitasHorario();
+        actualizarMatrizAgenda();
+        renderizarTarjetasHorariosVets();
+    }
+
+    function horaAMinutos(horaStr) {
+        if (!horaStr) return 0;
+        const partes = horaStr.split(':');
+        return parseInt(partes[0] || 0) * 60 + parseInt(partes[1] || 0);
+    }
+
+    function estaVeterinarioEnTurno(vet, horaStr) {
+        if (!vet || !horaStr) return true;
+        const h = horaAMinutos(horaStr);
+        const ini = horaAMinutos(vet.horarioInicio || "08:00");
+        const fin = horaAMinutos(vet.horarioFin || "17:00");
+        return h >= ini && h <= fin;
+    }
+
+    function tieneConflictoHorarioVet(vetId, fechaStr, horaStr, citaIdExcluir = null) {
+        if (!fechaStr || !horaStr) return false;
+        const fNormal = String(fechaStr).substring(0, 10);
+        return cacheCitasAdmin.some(c => {
+            if (citaIdExcluir && Number(c.id) === Number(citaIdExcluir)) return false;
+            if (String(c.estado || '').toUpperCase() === 'CANCELADA') return false;
+            const cVet = c.veterinario;
+            if (!cVet) return false;
+            const coincideVet = Number(cVet.id) === Number(vetId);
+            const coincideFecha = String(c.fecha || '').substring(0, 10) === fNormal;
+            const coincideHora = String(c.hora || '').substring(0, 5) === String(horaStr).substring(0, 5);
+            return coincideVet && coincideFecha && coincideHora;
+        });
+    }
+
+    function filtrarCitasHorario() {
+        const tbody = document.getElementById('tabla-citas-horarios');
+        if (!tbody) return;
+
+        const fechaFiltro = document.getElementById('filtroFechaHorario')?.value || '';
+        const estadoFiltro = document.getElementById('filtroEstadoHorario')?.value || 'TODOS';
+        const turnoFiltro = document.getElementById('filtroTurnoCitaHorario')?.value || 'TODOS';
+        const busqueda = (document.getElementById('buscarCitaHorarioInput')?.value || '').toLowerCase().trim();
+
+        const veterinarios = cacheUsuariosAdmin.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+
+        const citasFiltradas = cacheCitasAdmin.filter(c => {
+            const fCita = String(c.fecha || '').substring(0, 10);
+            if (fechaFiltro && fCita !== fechaFiltro) return false;
+
+            const st = String(c.estado || 'PENDIENTE').toUpperCase();
+            if (estadoFiltro === 'SIN_ASIGNAR' && (c.veterinario || st === 'CANCELADA')) return false;
+            if (estadoFiltro === 'CONFIRMADA' && st !== 'CONFIRMADA') return false;
+            if (estadoFiltro === 'ATENDIDA' && st !== 'ATENDIDA') return false;
+
+            const hMin = horaAMinutos(c.hora || "09:00");
+            if (turnoFiltro === 'MANANA' && hMin >= 14 * 60) return false;
+            if (turnoFiltro === 'TARDE' && hMin < 14 * 60) return false;
+
+            if (busqueda) {
+                const mascota = (c.mascota?.nombre || '').toLowerCase();
+                const prop = (c.mascota?.propietario?.nombre || '').toLowerCase();
+                const serv = (c.servicio || c.servicioEntidad?.nombre || '').toLowerCase();
+                if (!mascota.includes(busqueda) && !prop.includes(busqueda) && !serv.includes(busqueda)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        if (citasFiltradas.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 30px; color: #64748b;">
+                        🔍 No se encontraron citas con los filtros seleccionados.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = citasFiltradas.map(c => {
+            const fechaStr = formatearFecha(c.fecha);
+            const horaStr = c.hora || '--:--';
+            const hMin = horaAMinutos(c.hora || "09:00");
+            const esTurnoManana = hMin < 14 * 60;
+            const turnoBadge = esTurnoManana 
+                ? '<span style="font-size:0.7rem; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">🌅 Mañana</span>' 
+                : '<span style="font-size:0.7rem; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:bold;">🌆 Tarde</span>';
+
+            const mascotaNombre = c.mascota?.nombre || 'Mascota';
+            const propNombre = c.mascota?.propietario?.nombre || 'Cliente';
+            const servicioNombre = c.servicio || c.servicioEntidad?.nombre || 'Consulta General';
+            const vetActual = c.veterinario;
+
+            // Evaluar disponibilidad de cada veterinario para este horario específico
+            const opcionesVets = veterinarios.map(v => {
+                const enTurno = estaVeterinarioEnTurno(v, c.hora);
+                const enConflicto = tieneConflictoHorarioVet(v.id, c.fecha, c.hora, c.id);
+                const disponible = enTurno && !enConflicto;
+                const esActual = vetActual && (Number(vetActual.id) === Number(v.id) || vetActual.nombre === v.nombre);
+
+                let etiquetaIcono = '🟢';
+                let estadoTexto = 'En Turno y Disponible';
+                if (enConflicto) {
+                    etiquetaIcono = '🔴';
+                    estadoTexto = 'Ocupado a esa hora';
+                } else if (!enTurno) {
+                    etiquetaIcono = '🟡';
+                    estadoTexto = 'Fuera de Turno habitual';
+                }
+
+                const rIni = v.horarioInicio || '08:00';
+                const rFin = v.horarioFin || '17:00';
+
+                return `
+                    <option value="${v.id}" ${esActual ? 'selected' : ''}>
+                        ${etiquetaIcono} ${v.nombre} (${rIni} - ${rFin}) [${estadoTexto}]
+                    </option>
+                `;
+            }).join('');
+
+            // Estado actual del veterinario asignado
+            let estadoVetActualHtml = '';
+            if (vetActual) {
+                const enTurnoActual = estaVeterinarioEnTurno(vetActual, c.hora);
+                const badgeTurno = enTurnoActual 
+                    ? '<span class="horario-badge-en-turno">🟢 En Turno Laboral</span>' 
+                    : '<span class="horario-badge-fuera-turno">🟡 Fuera de Turno</span>';
+                
+                estadoVetActualHtml = `
+                    <div>
+                        <strong style="color: #1e40af; font-size: 0.9rem;">👨‍⚕️ ${vetActual.nombre}</strong><br>
+                        <span style="font-size: 0.76rem; color: #64748b;">Turno: ${vetActual.horarioInicio || '08:00'} - ${vetActual.horarioFin || '17:00'}</span><br>
+                        ${badgeTurno}
+                    </div>
+                `;
+            } else {
+                // Sugerir el mejor veterinario en turno para este servicio
+                const vetSugerido = buscarMejorVetEnTurno(c.hora, servicioNombre, veterinarios, c.fecha, c.id);
+                estadoVetActualHtml = `
+                    <div>
+                        <span class="horario-badge-ocupado" style="background:#fee2e2; color:#dc2626;">⚠️ Sin Asignar</span>
+                        ${vetSugerido ? `<br><span style="font-size: 0.74rem; color: #2563eb; font-weight: bold; margin-top: 3px; display: inline-block;">Sugerido: ${vetSugerido.nombre} (${vetSugerido.horarioInicio}-${vetSugerido.horarioFin})</span>` : ''}
+                    </div>
+                `;
+            }
+
+            return `
+                <tr>
+                    <td>
+                        <strong style="color: #0f172a; font-size: 0.95rem;">📅 ${fechaStr}</strong><br>
+                        <span style="font-size: 0.85rem; font-weight: bold; color: #2563eb;">⏰ ${horaStr}</span> ${turnoBadge}
+                    </td>
+                    <td>
+                        <strong style="color: #0f172a;">🐾 ${mascotaNombre}</strong><br>
+                        <span style="font-size: 0.8rem; color: #64748b;">👤 ${propNombre}</span>
+                    </td>
+                    <td>
+                        <span style="background: #f1f5f9; color: #1e293b; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; display: inline-block;">
+                            🩺 ${servicioNombre}
+                        </span>
+                    </td>
+                    <td>
+                        ${estadoVetActualHtml}
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.72rem; font-weight: bold; color: #64748b;">SELECCIONAR VETERINARIO SEGÚN HORARIO:</label>
+                            <select id="selectVetHorario_${c.id}" style="padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; width: 100%; max-width: 320px; background: white;">
+                                <option value="">-- Elige un Médico Veterinario --</option>
+                                ${opcionesVets}
+                            </select>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+                            <button onclick="asignarVetPorHorario(${c.id})" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(37,99,235,0.2);">
+                                💾 Asignar
+                            </button>
+                            <button onclick="sugerirYAsignarMejorVetHorario(${c.id})" style="background: #10b981; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                ⚡ Mejor en Turno
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function buscarMejorVetEnTurno(horaStr, servicioNombre, veterinarios, fechaStr, citaId = null) {
+        const sLower = (servicioNombre || '').toLowerCase();
+        // 1. Veterinarios en turno y sin conflicto cuya especialidad coincida
+        for (let v of veterinarios) {
+            if (estaVeterinarioEnTurno(v, horaStr) && !tieneConflictoHorarioVet(v.id, fechaStr, horaStr, citaId)) {
+                const esp = (v.especialidad || '').toLowerCase();
+                if (esp && (sLower.includes(esp) || esp.includes(sLower) ||
+                    (sLower.includes('consulta') && esp.includes('general')) ||
+                    (sLower.includes('cirug') && esp.includes('cirug')) ||
+                    (sLower.includes('vacun') && esp.includes('vacun')) ||
+                    (sLower.includes('diag') || sLower.includes('imag') && esp.includes('diag')))) {
+                    return v;
+                }
+            }
+        }
+        // 2. Cualquier veterinario en turno y libre
+        for (let v of veterinarios) {
+            if (estaVeterinarioEnTurno(v, horaStr) && !tieneConflictoHorarioVet(v.id, fechaStr, horaStr, citaId)) {
+                return v;
+            }
+        }
+        return null;
+    }
+
+    async function asignarVetPorHorario(citaId, vetIdManual = null) {
+        const select = document.getElementById(`selectVetHorario_${citaId}`);
+        const vetId = vetIdManual || (select ? select.value : null);
+
+        if (!vetId) {
+            alert('Por favor selecciona un médico veterinario de la lista.');
+            return;
+        }
+
+        const cita = cacheCitasAdmin.find(c => Number(c.id) === Number(citaId));
+        const vet = cacheUsuariosAdmin.find(u => Number(u.id) === Number(vetId));
+
+        if (!cita || !vet) {
+            alert('Datos de cita o veterinario no válidos.');
+            return;
+        }
+
+        const enTurno = estaVeterinarioEnTurno(vet, cita.hora);
+        const enConflicto = tieneConflictoHorarioVet(vet.id, cita.fecha, cita.hora, cita.id);
+
+        if (enConflicto) {
+            const continuar = confirm(`⚠️ ALERTA DE HORARIO:\nEl Dr./Dra. ${vet.nombre} ya tiene otra cita médica agendada para el ${cita.fecha} a las ${cita.hora}.\n\n¿Deseas forzar la asignación de todos modos?`);
+            if (!continuar) return;
+        } else if (!enTurno) {
+            const continuar = confirm(`ℹ️ AVISO DE TURNO:\nLa hora de la cita (${cita.hora}) está fuera del horario habitual de ${vet.nombre} (${vet.horarioInicio || '08:00'} - ${vet.horarioFin || '17:00'}).\n\n¿Deseas confirmar la asignación fuera de turno?`);
+            if (!continuar) return;
+        }
+
+        try {
+            const res = await fetch(`/api/citas/${citaId}/asignar-veterinario/${vetId}?forzar=true`, { method: 'PUT' });
+            if (res.ok) {
+                mostrarToastAdmin(`✅ Cita asignada exitosamente a ${vet.nombre}.`);
+                renderizarAsignacionHorarios();
+                cargarDashboard();
+                return;
+            }
+        } catch (e) {
+            console.warn('Asignando localmente en frontend:', e);
+        }
+
+        // Fallback local
+        const idx = cacheCitasAdmin.findIndex(c => Number(c.id) === Number(citaId));
+        if (idx !== -1) {
+            cacheCitasAdmin[idx].veterinario = vet;
+            cacheCitasAdmin[idx].estado = 'CONFIRMADA';
+            localStorage.setItem('canopolis_citas', JSON.stringify(cacheCitasAdmin));
+            mostrarToastAdmin(`✅ Cita asignada a ${vet.nombre} (${vet.turno || 'Horario'}).`);
+            renderizarAsignacionHorarios();
+            cargarDashboard();
+        }
+    }
+
+    async function sugerirYAsignarMejorVetHorario(citaId) {
+        const cita = cacheCitasAdmin.find(c => Number(c.id) === Number(citaId));
+        if (!cita) return;
+
+        const veterinarios = cacheUsuariosAdmin.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+        const sNombre = cita.servicio || cita.servicioEntidad?.nombre || 'Consulta General';
+        const mejorVet = buscarMejorVetEnTurno(cita.hora, sNombre, veterinarios, cita.fecha, cita.id);
+
+        if (!mejorVet) {
+            alert(`⚠️ No se encontró ningún médico veterinario con turno disponible y libre para el horario de las ${cita.hora}. Puedes asignar manualmente o ajustar los turnos.`);
+            return;
+        }
+
+        const select = document.getElementById(`selectVetHorario_${citaId}`);
+        if (select) select.value = mejorVet.id;
+
+        await asignarVetPorHorario(citaId, mejorVet.id);
+    }
+
+    async function autoAsignarCitasPorHorarioInteligente() {
+        let asignadas = 0;
+        try {
+            const res = await fetch("/api/citas/auto-asignar-por-horario", { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                mostrarToastAdmin(`⚡ ${data.mensaje}`);
+                renderizarAsignacionHorarios();
+                cargarDashboard();
+                return;
+            }
+        } catch (e) {}
+
+        // Fallback local
+        const veterinarios = cacheUsuariosAdmin.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+        for (let c of cacheCitasAdmin) {
+            if (!c.veterinario && String(c.estado || '').toUpperCase() !== 'CANCELADA') {
+                const sNombre = c.servicio || c.servicioEntidad?.nombre || 'Consulta General';
+                const vetMatch = buscarMejorVetEnTurno(c.hora, sNombre, veterinarios, c.fecha, c.id);
+                if (vetMatch) {
+                    c.veterinario = vetMatch;
+                    c.estado = 'CONFIRMADA';
+                    asignadas++;
+                    try {
+                        await fetch(`/api/citas/${c.id}/asignar-veterinario/${vetMatch.id}?forzar=true`, { method: 'PUT' });
+                    } catch(err) {}
+                }
+            }
+        }
+
+        localStorage.setItem('canopolis_citas', JSON.stringify(cacheCitasAdmin));
+        alert(`⚡ Se auto-asignaron ${asignadas} citas médicas según el horario laboral y disponibilidad de los veterinarios.`);
+        renderizarAsignacionHorarios();
+        cargarDashboard();
+    }
+
+    // ========================================================
+    // MATRIZ Y AGENDA DE HORARIOS DEL DÍA
+    // ========================================================
+    function actualizarMatrizAgenda() {
+        const contenedor = document.getElementById('contenedor-matriz-agenda');
+        if (!contenedor) return;
+
+        const inputFecha = document.getElementById('fechaMatrizAgenda');
+        const fechaSeleccionada = (inputFecha && inputFecha.value) ? inputFecha.value : new Date().toISOString().substring(0, 10);
+
+        const veterinarios = cacheUsuariosAdmin.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+        const bloquesHoras = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+
+        let html = `
+            <table class="matriz-tabla">
+                <thead>
+                    <tr>
+                        <th style="min-width: 180px; text-align: left; padding-left: 14px;">Veterinario / Turno</th>
+                        ${bloquesHoras.map(h => `<th>${h}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        veterinarios.forEach(v => {
+            const rIni = v.horarioInicio || '08:00';
+            const rFin = v.horarioFin || '17:00';
+
+            html += `
+                <tr>
+                    <td style="text-align: left; padding-left: 14px; background: #fafafa;">
+                        <strong style="color: #0f172a;">👨‍⚕️ ${v.nombre}</strong><br>
+                        <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;">⏰ ${rIni} - ${rFin}</span>
+                    </td>
+            `;
+
+            bloquesHoras.forEach(h => {
+                const enTurno = estaVeterinarioEnTurno(v, h);
+                // Buscar cita médica activa
+                const citaEnHora = cacheCitasAdmin.find(c => {
+                    if (String(c.estado || '').toUpperCase() === 'CANCELADA') return false;
+                    const cVet = c.veterinario;
+                    if (!cVet || (Number(cVet.id) !== Number(v.id) && cVet.nombre !== v.nombre)) return false;
+                    const cFecha = String(c.fecha || '').substring(0, 10);
+                    const cHora = String(c.hora || '').substring(0, 2);
+                    const bHora = h.substring(0, 2);
+                    return cFecha === fechaSeleccionada && cHora === bHora;
+                });
+
+                if (!enTurno) {
+                    html += `<td><div class="slot-fuera">⚪ Fuera</div></td>`;
+                } else if (citaEnHora) {
+                    const mName = citaEnHora.mascota?.nombre || 'Cita';
+                    html += `<td><div class="slot-ocupado" title="${mName} (${citaEnHora.servicio || 'Consulta'})">🔵 ${mName}</div></td>`;
+                } else {
+                    html += `<td><div class="slot-libre" onclick="asignarSlotDesdeMatriz(${v.id}, '${fechaSeleccionada}', '${h}')" title="Click para asignar una cita pendiente">🟢 Libre</div></td>`;
+                }
+            });
+
+            html += `</tr>`;
+        });
+
+        html += `
+                </tbody>
+            </table>
+        `;
+
+        contenedor.innerHTML = html;
+    }
+
+    function asignarSlotDesdeMatriz(vetId, fecha, hora) {
+        const vet = cacheUsuariosAdmin.find(u => Number(u.id) === Number(vetId));
+        if (!vet) return;
+
+        // Buscar citas sin asignar
+        const citasPendientes = cacheCitasAdmin.filter(c => !c.veterinario && String(c.estado || '').toUpperCase() !== 'CANCELADA');
+        if (citasPendientes.length === 0) {
+            alert(`El horario de las ${hora} está libre para el Dr./Dra. ${vet.nombre}, pero actualmente no hay citas médicas pendientes por asignar.`);
+            return;
+        }
+
+        const opcionesMsg = citasPendientes.map((c, i) => `${i + 1}. [Cita #${c.id}] Mascota: ${c.mascota?.nombre || 'N/A'} - Servicio: ${c.servicio || 'General'} (Fecha original: ${c.fecha} ${c.hora})`).join('\n');
+        const seleccion = prompt(`Selecciona el número de la cita pendiente que deseas asignar al Dr./Dra. ${vet.nombre} en este horario (${fecha} a las ${hora}):\n\n${opcionesMsg}`);
+
+        const num = parseInt(seleccion);
+        if (num >= 1 && num <= citasPendientes.length) {
+            const citaElegida = citasPendientes[num - 1];
+            citaElegida.fecha = fecha;
+            citaElegida.hora = hora;
+            asignarVetPorHorario(citaElegida.id, vet.id);
+        }
+    }
+
+    // ========================================================
+    // GESTIÓN DE HORARIOS Y TURNOS DEL EQUIPO VETERINARIO
+    // ========================================================
+    function renderizarTarjetasHorariosVets() {
+        const grid = document.getElementById('grid-vets-horarios');
+        if (!grid) return;
+
+        const veterinarios = cacheUsuariosAdmin.filter(u => String(u.rol || '').toUpperCase() === 'VETERINARIO');
+        if (veterinarios.length === 0) {
+            grid.innerHTML = '<p style="color:#64748b;">No hay veterinarios registrados en el sistema.</p>';
+            return;
+        }
+
+        grid.innerHTML = veterinarios.map(v => {
+            const rIni = v.horarioInicio || '08:00';
+            const rFin = v.horarioFin || '17:00';
+            const turnoStr = v.turno || 'Horario Estándar';
+            const diasStr = v.diasLaborales || 'Lunes a Sábado';
+
+            return `
+                <div class="vet-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                        <div style="width: 48px; height: 48px; border-radius: 10px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
+                            👨‍⚕️
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1rem; color: #0f172a; margin-bottom: 2px;">${v.nombre}</h4>
+                            <span style="font-size: 0.78rem; color: #059669; font-weight: bold;">🩺 ${v.especialidad || 'Consulta General'}</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 14px; font-size: 0.85rem; line-height: 1.6;">
+                        <p><strong>🕒 Turno:</strong> <span style="color:#2563eb; font-weight:bold;">${turnoStr}</span></p>
+                        <p><strong>⏰ Horario:</strong> ${rIni} a ${rFin}</p>
+                        <p><strong>📅 Días:</strong> ${diasStr}</p>
+                    </div>
+
+                    <button onclick="abrirModalEditarHorarioVet(${v.id})" style="width: 100%; background: #0284c7; color: white; border: none; padding: 9px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        ✏️ Modificar Horario / Turno
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function abrirModalEditarHorarioVet(vetId) {
+        const vet = cacheUsuariosAdmin.find(u => Number(u.id) === Number(vetId));
+        if (!vet) return;
+
+        document.getElementById('editVetId').value = vet.id;
+        document.getElementById('modalHorarioVetNombre').textContent = `${vet.nombre} — ${vet.email || ''}`;
+        document.getElementById('editVetHoraInicio').value = vet.horarioInicio || '08:00';
+        document.getElementById('editVetHoraFin').value = vet.horarioFin || '14:00';
+        document.getElementById('editVetDiasLaborales').value = vet.diasLaborales || 'Lunes a Sábado';
+        document.getElementById('editVetEspecialidad').value = vet.especialidad || 'Consulta General';
+
+        document.getElementById('modalHorarioVetAdmin').style.display = 'flex';
+    }
+
+    function cerrarModalHorarioVet() {
+        document.getElementById('modalHorarioVetAdmin').style.display = 'none';
+    }
+
+    function aplicarTurnoPreset() {
+        const preset = document.getElementById('editVetTurnoPreset').value;
+        const ini = document.getElementById('editVetHoraInicio');
+        const fin = document.getElementById('editVetHoraFin');
+        const dias = document.getElementById('editVetDiasLaborales');
+
+        if (preset === 'MANANA') {
+            ini.value = '08:00'; fin.value = '14:00'; dias.value = 'Lunes a Sábado';
+        } else if (preset === 'TARDE') {
+            ini.value = '14:00'; fin.value = '20:00'; dias.value = 'Lunes a Viernes';
+        } else if (preset === 'COMPLETO') {
+            ini.value = '08:00'; fin.value = '17:00'; dias.value = 'Lunes a Sábado';
+        } else if (preset === 'INTERMEDIO') {
+            ini.value = '11:00'; fin.value = '19:00'; dias.value = 'Lunes a Sábado';
+        }
+    }
+
+    async function guardarHorarioVetAdmin(e) {
+        e.preventDefault();
+        const vetId = document.getElementById('editVetId').value;
+        const horaInicio = document.getElementById('editVetHoraInicio').value;
+        const horaFin = document.getElementById('editVetHoraFin').value;
+        const diasLaborales = document.getElementById('editVetDiasLaborales').value;
+        const especialidad = document.getElementById('editVetEspecialidad').value.trim();
+
+        const presetEl = document.getElementById('editVetTurnoPreset');
+        const turnoTexto = presetEl.options[presetEl.selectedIndex].text;
+
+        const payload = {
+            horarioInicio,
+            horarioFin,
+            turno: turnoTexto,
+            diasLaborales,
+            especialidad
+        };
+
+        try {
+            const res = await fetch(`/api/usuarios/${vetId}/horario`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                mostrarToastAdmin('✅ Horario de trabajo actualizado con éxito en MySQL.');
+            }
+        } catch (err) {
+            console.warn('Actualizando horario localmente:', err);
+        }
+
+        // Actualizar caché y localStorage
+        const idx = cacheUsuariosAdmin.findIndex(u => Number(u.id) === Number(vetId));
+        if (idx !== -1) {
+            cacheUsuariosAdmin[idx].horarioInicio = horaInicio;
+            cacheUsuariosAdmin[idx].horarioFin = horaFin;
+            cacheUsuariosAdmin[idx].turno = turnoTexto;
+            cacheUsuariosAdmin[idx].diasLaborales = diasLaborales;
+            if (especialidad) cacheUsuariosAdmin[idx].especialidad = especialidad;
+            guardarUsuariosLocal(cacheUsuariosAdmin);
+        }
+
+        cerrarModalHorarioVet();
+        renderizarAsignacionHorarios();
+    }
+
+    function scrollHaciaMatrizHorarios() {
+        document.getElementById('seccion-matriz-horarios')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollHaciaTarjetasVets() {
+        document.getElementById('seccion-tarjetas-horarios')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function limpiarFiltrosHorario() {
+        document.getElementById('filtroFechaHorario').value = '';
+        document.getElementById('filtroEstadoHorario').value = 'TODOS';
+        document.getElementById('filtroTurnoCitaHorario').value = 'TODOS';
+        document.getElementById('buscarCitaHorarioInput').value = '';
+        filtrarCitasHorario();
+    }
+
+    function mostrarToastAdmin(mensaje) {
+        const toast = document.createElement('div');
+        toast.style.cssText = "position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2);";
+        toast.innerHTML = mensaje;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2800);
+    }
     function obtenerUsuariosLocal() {
         let lista = JSON.parse(localStorage.getItem('canopolis_usuarios') || 'null');
         if (!lista || lista.length === 0 || !lista.some(u => u.especialidad)) {
@@ -1620,13 +2623,33 @@
                 { id: 1, nombre: "Carlos Gómez", email: "carlos.gomez@gmail.com", rol: "CLIENTE", estado: "ACTIVO", fechaRegistro: "2026-01-15" },
                 { id: 2, nombre: "María Rodríguez", email: "maria.rodriguez@hotmail.com", rol: "CLIENTE", estado: "ACTIVO", fechaRegistro: "2026-02-10" },
                 { id: 3, nombre: "Ana Martínez", email: "ana.martinez@yahoo.com", rol: "CLIENTE", estado: "INACTIVO", fechaRegistro: "2026-03-01" },
-                { id: 101, nombre: "Dr. David García", email: "dr.garcia@canopolis.com", rol: "VETERINARIO", especialidad: "Consulta General", estado: "ACTIVO", fechaRegistro: "2025-11-20" },
-                { id: 102, nombre: "Dra. María Elena López", email: "dra.lopez@canopolis.com", rol: "VETERINARIO", especialidad: "Cirugía Especializada", estado: "ACTIVO", fechaRegistro: "2025-11-21" },
-                { id: 103, nombre: "Dr. Carlos Andrés Ruiz", email: "dr.ruiz@canopolis.com", rol: "VETERINARIO", especialidad: "Vacunación y Desparasitación", estado: "ACTIVO", fechaRegistro: "2025-11-22" },
-                { id: 104, nombre: "Dra. Sofía Ramírez", email: "dra.ramirez@canopolis.com", rol: "VETERINARIO", especialidad: "Diagnóstico por Imagen", estado: "ACTIVO", fechaRegistro: "2025-11-23" },
+                { id: 101, nombre: "Dr. David García", email: "dr.garcia@canopolis.com", rol: "VETERINARIO", especialidad: "Consulta General", horarioInicio: "08:00", horarioFin: "14:00", turno: "Turno Mañana (08:00 - 14:00)", diasLaborales: "Lunes a Sábado", estado: "ACTIVO", fechaRegistro: "2025-11-20" },
+                { id: 102, nombre: "Dra. María Elena López", email: "dra.lopez@canopolis.com", rol: "VETERINARIO", especialidad: "Cirugía Especializada", horarioInicio: "14:00", horarioFin: "20:00", turno: "Turno Tarde (14:00 - 20:00)", diasLaborales: "Lunes a Viernes", estado: "ACTIVO", fechaRegistro: "2025-11-21" },
+                { id: 103, nombre: "Dr. Carlos Andrés Ruiz", email: "dr.ruiz@canopolis.com", rol: "VETERINARIO", especialidad: "Vacunación y Desparasitación", horarioInicio: "08:00", horarioFin: "14:00", turno: "Turno Mañana (08:00 - 14:00)", diasLaborales: "Lunes a Sábado", estado: "ACTIVO", fechaRegistro: "2025-11-22" },
+                { id: 104, nombre: "Dra. Sofía Ramírez", email: "dra.ramirez@canopolis.com", rol: "VETERINARIO", especialidad: "Diagnóstico por Imagen", horarioInicio: "13:00", horarioFin: "19:00", turno: "Turno Tarde (13:00 - 19:00)", diasLaborales: "Lunes a Sábado", estado: "ACTIVO", fechaRegistro: "2025-11-23" },
                 { id: 5, nombre: "Admin Canopolis", email: "admin@canopolis.com", rol: "ADMINISTRADOR", estado: "ACTIVO", fechaRegistro: "2025-10-01" }
             ];
             localStorage.setItem('canopolis_usuarios', JSON.stringify(lista));
+        } else {
+            // Asegurar que veterinarios existentes tengan horarios asignados
+            let modificado = false;
+            lista.forEach(u => {
+                if (String(u.rol || '').toUpperCase() === 'VETERINARIO') {
+                    if (!u.horarioInicio) {
+                        modificado = true;
+                        if (u.id === 102 || (u.nombre && u.nombre.includes('López'))) {
+                            u.horarioInicio = "14:00"; u.horarioFin = "20:00"; u.turno = "Turno Tarde (14:00 - 20:00)"; u.diasLaborales = "Lunes a Viernes";
+                        } else if (u.id === 104 || (u.nombre && u.nombre.includes('Ramírez'))) {
+                            u.horarioInicio = "13:00"; u.horarioFin = "19:00"; u.turno = "Turno Tarde (13:00 - 19:00)"; u.diasLaborales = "Lunes a Sábado";
+                        } else {
+                            u.horarioInicio = "08:00"; u.horarioFin = "14:00"; u.turno = "Turno Mañana (08:00 - 14:00)"; u.diasLaborales = "Lunes a Sábado";
+                        }
+                    }
+                }
+            });
+            if (modificado) {
+                localStorage.setItem('canopolis_usuarios', JSON.stringify(lista));
+            }
         }
         return lista;
     }
